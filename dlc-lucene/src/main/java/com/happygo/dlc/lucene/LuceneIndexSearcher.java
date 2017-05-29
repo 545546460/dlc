@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -140,5 +141,19 @@ public final class LuceneIndexSearcher {
 			throw new DLCException(e.getMessage(), e);
 		}
 		return scoreDocs;
+	}
+	
+	/**
+	 * @MethodName: hitDocument
+	 * @Description: the hitDocument
+	 * @param scoreDoc
+	 * @return Document
+	 */
+	public Document hitDocument(ScoreDoc scoreDoc) {
+		try {
+			return indexSearcher.doc(scoreDoc.doc);
+		} catch (IOException e) {
+			throw new DLCException(e.getMessage(), e);
+		}
 	}
 }
