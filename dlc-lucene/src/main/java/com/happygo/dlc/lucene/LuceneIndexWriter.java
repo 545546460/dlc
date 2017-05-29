@@ -1,3 +1,16 @@
+/**
+ * Copyright  2017
+ * 
+ * All  right  reserved.
+ *
+ * Created  on  2017年5月29日 上午10:23:02
+ *
+ * @Package com.happygo.dlc.lucene  
+ * @Title: LuceneIndexWriter.java
+ * @Description: LuceneIndexWriter.java
+ * @author sxp (1378127237@qq.com) 
+ * @version 1.0.0 
+ */
 package com.happygo.dlc.lucene;
 
 import java.io.IOException;
@@ -18,16 +31,25 @@ import com.happgo.dlc.base.DLCException;
 /**
  * ClassName:LuceneIndexWriter
  * 
- * @author sxp
- * @date:2017年5月29日 上午10:23:02
+ * @Description: LuceneIndexWriter.java
+ * @author sxp (1378127237@qq.com)
+ * @date:2017年5月29日 下午7:08:30
  */
 public final class LuceneIndexWriter {
 
+	/**
+	 * IndexWriter the indexWriter
+	 */
 	private IndexWriter indexWriter;
 
+	/**
+	 * Directory the directory
+	 */
 	private Directory directory;
 
 	/**
+	 * Constructor com.happygo.dlc.lucene.LuceneIndexWriter
+	 * 
 	 * @param analyzer
 	 * @param dirPath
 	 */
@@ -45,7 +67,11 @@ public final class LuceneIndexWriter {
 	}
 
 	/**
-	 * indexWriter LuceneIndexWriter
+	 * @MethodName: indexWriter
+	 * @Description: the indexWriter
+	 * @param analyzer
+	 * @param dirPath
+	 * @return LuceneIndexWriter
 	 */
 	public static LuceneIndexWriter indexWriter(Analyzer analyzer,
 			String dirPath) {
@@ -53,7 +79,12 @@ public final class LuceneIndexWriter {
 	}
 
 	/**
-	 * addField void
+	 * @MethodName: addField
+	 * @Description: the addField
+	 * @param doc
+	 * @param name
+	 * @param value
+	 * @param fieldType
 	 */
 	public void addField(Document doc, String name, String value,
 			FieldType fieldType) {
@@ -62,7 +93,9 @@ public final class LuceneIndexWriter {
 	}
 
 	/**
-	 * addDocument void
+	 * @MethodName: addDocument
+	 * @Description: the addDocument
+	 * @param doc
 	 */
 	public void addDocument(Document doc) {
 		try {
