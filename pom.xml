@@ -9,5 +9,6 @@
     <module>dlc-ignite</module>
     <module>dlc-lucene</module>
     <module>dlc-log</module>
+    <module>dlc-base</module>
   </modules>
 </project>
