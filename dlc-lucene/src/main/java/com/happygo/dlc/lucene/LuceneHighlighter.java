@@ -1,3 +1,16 @@
+/**
+ * Copyright  2017
+ * 
+ * All  right  reserved.
+ *
+ * Created  on  2017年5月29日 下午7:00:00
+ *
+ * @Package com.happygo.dlc.lucene  
+ * @Title: LuceneHighlighterf.java
+ * @Description: LuceneHighlighter.java
+ * @author sxp (1378127237@qq.com) 
+ * @version 1.0.0 
+ */
 package com.happygo.dlc.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -15,14 +28,27 @@ import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import com.happgo.dlc.base.Assert;
 import com.happgo.dlc.base.DLCException;
 
+/**
+ * ClassName:LuceneHighlighter
+ * 
+ * @Description: LuceneHighlighter.java
+ * @author sxp (1378127237@qq.com)
+ * @date:2017年5月29日 下午7:00:46
+ */
 public class LuceneHighlighter {
 
+	/**
+	 * Highlighter the highlighter
+	 */
 	private Highlighter highlighter;
 
 	/**
+	 * Constructor com.happygo.dlc.lucene.LuceneHighlighter
+	 * 
 	 * @param preTag
 	 * @param postTag
 	 * @param query
+	 * @param fragmentSize
 	 */
 	private LuceneHighlighter(String preTag, String postTag, Query query,
 			int fragmentSize) {
@@ -38,7 +64,13 @@ public class LuceneHighlighter {
 	}
 
 	/**
-	 * highlight LuceneHighlighter
+	 * @MethodName: highlight
+	 * @Description: the highlight
+	 * @param preTag
+	 * @param postTag
+	 * @param query
+	 * @param fragmentSize
+	 * @return LuceneHighlighter
 	 */
 	public static LuceneHighlighter highlight(String preTag, String postTag,
 			Query query, int fragmentSize) {
@@ -46,7 +78,12 @@ public class LuceneHighlighter {
 	}
 
 	/**
-	 * getBestFragment String
+	 * @MethodName: getBestFragment
+	 * @Description: the getBestFragment
+	 * @param analyzer
+	 * @param doc
+	 * @param fieldName
+	 * @return String
 	 */
 	public String getBestFragment(Analyzer analyzer, Document doc,
 			String fieldName) {
@@ -59,7 +96,12 @@ public class LuceneHighlighter {
 	}
 
 	/**
-	 * getBestFragment String
+	 * @MethodName: getBestFragment
+	 * @Description: the getBestFragment
+	 * @param analyzer
+	 * @param fieldName
+	 * @param text
+	 * @return String
 	 */
 	public String getBestFragment(Analyzer analyzer, String fieldName,
 			String text) {

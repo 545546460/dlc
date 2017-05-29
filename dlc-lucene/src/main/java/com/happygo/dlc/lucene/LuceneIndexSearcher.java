@@ -1,3 +1,16 @@
+/**
+ * Copyright  2017
+ * 
+ * All  right  reserved.
+ *
+ * Created  on  2017年5月29日 下午6:33:43
+ *
+ * @Package com.happygo.dlc.lucene  
+ * @Title: LuceneIndexSearcher.java
+ * @Description: LuceneIndexSearcher.java
+ * @author sxp (1378127237@qq.com) 
+ * @version 1.0.0 
+ */
 package com.happygo.dlc.lucene;
 
 import java.io.IOException;
@@ -21,20 +34,35 @@ import com.happgo.dlc.base.DLCException;
 /**
  * ClassName:LuceneIndexSearcher
  * 
- * @author sxp
- * @date:2017年5月29日 上午11:07:29
+ * @Description: LuceneIndexSearcher.java
+ * @author sxp (1378127237@qq.com)
+ * @date:2017年5月29日 下午6:33:43
  */
 public final class LuceneIndexSearcher {
 
+	/**
+	 * LuceneHighlighter the luceneHighlighter
+	 */
 	public LuceneHighlighter luceneHighlighter;
 
+	/**
+	 * Analyzer the analyzer
+	 */
 	public Analyzer analyzer;
 
+	/**
+	 * IndexSearcher the indexSearcher
+	 */
 	private IndexSearcher indexSearcher;
 
+	/**
+	 * Directory the directory
+	 */
 	private Directory directory;
 
 	/**
+	 * Constructor com.happygo.dlc.lucene.LuceneIndexSearcher
+	 * 
 	 * @param dirPath
 	 * @param analyzer
 	 */
@@ -52,7 +80,11 @@ public final class LuceneIndexSearcher {
 	}
 
 	/**
-	 * indexSearcher LuceneIndexSearcher
+	 * @MethodName: indexSearcher
+	 * @Description: the indexSearcher
+	 * @param dirPath
+	 * @param analyzer
+	 * @return LuceneIndexSearcher
 	 */
 	public static LuceneIndexSearcher indexSearcher(String dirPath,
 			Analyzer analyzer) {
@@ -60,7 +92,14 @@ public final class LuceneIndexSearcher {
 	}
 
 	/**
-	 * fuzzySearch ScoreDoc[]
+	 * @MethodName: fuzzySearch
+	 * @Description: the fuzzySearch
+	 * @param fieldName
+	 * @param text
+	 * @param preTag
+	 * @param postTag
+	 * @param fragmentSize
+	 * @return ScoreDoc[]
 	 */
 	public ScoreDoc[] fuzzySearch(String fieldName, String text, String preTag,
 			String postTag, int fragmentSize) {
@@ -78,14 +117,22 @@ public final class LuceneIndexSearcher {
 	}
 
 	/**
-	 * multiFieldSearch
-	 * ScoreDoc[]
+	 * @MethodName: multiFieldSearch
+	 * @Description: the multiFieldSearch
+	 * @param queryStrs
+	 * @param fields
+	 * @param occurs
+	 * @param preTag
+	 * @param postTag
+	 * @param fragmentSize
+	 * @return ScoreDoc[]
 	 */
-	public ScoreDoc[] multiFieldSearch(String[] queryStrs, String[] fields, Occur[] occurs,
-			String preTag, String postTag, int fragmentSize) {
+	public ScoreDoc[] multiFieldSearch(String[] queryStrs, String[] fields,
+			Occur[] occurs, String preTag, String postTag, int fragmentSize) {
 		ScoreDoc[] scoreDocs;
 		try {
-			Query query = MultiFieldQueryParser.parse(queryStrs, fields, occurs, analyzer);
+			Query query = MultiFieldQueryParser.parse(queryStrs, fields,
+					occurs, analyzer);
 			luceneHighlighter = LuceneHighlighter.highlight(preTag, postTag,
 					query, fragmentSize);
 			scoreDocs = indexSearcher.search(query, 10000).scoreDocs;
