@@ -17,15 +17,16 @@ import com.happgo.dlc.base.DLCException;
 
 /**
  * ClassName:LuceneIndexWriter
+ * 
  * @author sxp
  * @date:2017年5月29日 上午10:23:02
  */
 public final class LuceneIndexWriter {
-	
+
 	private IndexWriter indexWriter;
-	
+
 	private Directory directory;
-	
+
 	/**
 	 * @param analyzer
 	 * @param dirPath
@@ -33,7 +34,7 @@ public final class LuceneIndexWriter {
 	private LuceneIndexWriter(Analyzer analyzer, String dirPath) {
 		Assert.isNull(analyzer);
 		Assert.isNull(dirPath);
-		
+
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 		try {
 			directory = FSDirectory.open(Paths.get(dirPath));
@@ -42,27 +43,26 @@ public final class LuceneIndexWriter {
 			throw new DLCException(e.getMessage(), e);
 		}
 	}
-	
+
 	/**
-	 * indexWriter
-	 * LuceneIndexWriter
+	 * indexWriter LuceneIndexWriter
 	 */
-	public static LuceneIndexWriter indexWriter(Analyzer analyzer, String dirPath) {
+	public static LuceneIndexWriter indexWriter(Analyzer analyzer,
+			String dirPath) {
 		return new LuceneIndexWriter(analyzer, dirPath);
 	}
-	
+
 	/**
-	 * addField
-	 * void
+	 * addField void
 	 */
-	public void addField(Document doc, String name, String value, FieldType fieldType) {
+	public void addField(Document doc, String name, String value,
+			FieldType fieldType) {
 		Field field = new Field(name, value, fieldType);
 		doc.add(field);
 	}
-	
+
 	/**
-	 * addDocument
-	 * void
+	 * addDocument void
 	 */
 	public void addDocument(Document doc) {
 		try {
