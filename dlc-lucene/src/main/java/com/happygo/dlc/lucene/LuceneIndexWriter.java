@@ -100,6 +100,17 @@ public final class LuceneIndexWriter {
 	public void addDocument(Document doc) {
 		try {
 			indexWriter.addDocument(doc);
+		} catch (IOException e) {
+			throw new DLCException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * @MethodName: close
+	 * @Description: the close
+	 */
+	public void close() {
+		try {
 			indexWriter.close();
 			directory.close();
 		} catch (IOException e) {
