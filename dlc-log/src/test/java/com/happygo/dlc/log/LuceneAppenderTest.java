@@ -55,18 +55,19 @@ public class LuceneAppenderTest {
 	}
 	
     @Test
-    public void testSimpleThread() {
-    	try {
-			write();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-    }
+	public void testSimpleThread() throws Exception {
+		write();
+	}
     
 	@Test
-	public void testMultiThreads() {
-		final ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_COUNT);
-		
+	public void testMultiThreads() throws Exception {
+		final ExecutorService threadPool = Executors
+				.newFixedThreadPool(THREAD_COUNT);
+		final LuceneAppenderRunner runner = new LuceneAppenderRunner();
+		for (int i = 0; i < THREAD_COUNT; ++i) {
+			threadPool.execute(runner);
+		}
+		Thread.sleep(3000);
 	}
 	
 	private final void write() throws Exception {
@@ -88,12 +89,12 @@ public class LuceneAppenderTest {
 	
 	private class LuceneAppenderRunner implements Runnable {
 
-		/* (non-Javadoc)
-		 * @see java.lang.Runnable#run()
-		 */
 		public void run() {
-			
-			
+			try {
+				write();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 }
