@@ -15,15 +15,20 @@ package com.happygo.dlc.log;
 
 import static org.junit.Assert.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.DOMConfiguration;
 
 /**
  * ClassName:LuceneAppenderTest
@@ -33,10 +38,9 @@ import org.w3c.dom.DOMConfiguration;
  */
 public class LuceneAppenderTest {
 	
-	private static final String CONFIGURATION_FILE = "log4j2-lucene.xml";
+	private static final String CONFIGURATION_FILE = "src/test/resources/log4j2-lucene.xml";
 	
-	@Rule
-	public LoggerContextRule ctx = new LoggerContextRule(CONFIGURATION_FILE);
+	private LoggerContext loggerContext;
 	
 	private static final String LOGGER_NAME = "TestLogger";
 	
@@ -44,9 +48,19 @@ public class LuceneAppenderTest {
 
 	private static final int THREAD_COUNT = 50;
 	
+	@Before
+	public void setUp() throws FileNotFoundException, IOException {
+		 ConfigurationSource source = new ConfigurationSource(new FileInputStream(CONFIGURATION_FILE));
+		 loggerContext = Configurator.initialize(null, source);	
+	}
+	
     @Test
     public void testSimpleThread() {
-    	write();
+    	try {
+			write();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
     
 	@Test
@@ -56,8 +70,7 @@ public class LuceneAppenderTest {
 	}
 	
 	private final void write() throws Exception {
-		final LuceneAppender appender = (LuceneAppender) ctx
-				.getRequiredAppender("LuceneAppender");
+		final LuceneAppender appender = loggerContext.getConfiguration().getAppender("LuceneAppender");
 		try {
 			appender.start();
 			assertTrue("Appender did not start", appender.isStarted());
