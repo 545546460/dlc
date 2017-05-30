@@ -83,6 +83,7 @@ public class LuceneIndexField {
 	* @Description: the newBuilder
 	* @return Builder
 	*/
+	@SuppressWarnings("all")
 	@PluginBuilderFactory
 	public static Builder newBuilder() {
 		return new Builder();

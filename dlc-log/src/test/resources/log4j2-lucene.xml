@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Copyright  2017
+ 
+All  right  reserved.
+
+Created  on  2017年5月30日 上午7:39:31
+ -->
+ 
+<Configuration name="LuceneAppenderTest" packages = "com.wb.testCase">
+  <Appenders>
+    <Lucene name="LuceneAppender" target = "F:\lucene_index">
+    	<IndexField name = "level" pattern = "%-5level" />
+    	<IndexField name = "time" pattern = "%d{UNIX_MILLIS}" type="LongField"/>
+    	<IndexField name = "content" pattern = "%p %c - %m%n" />
+    </Lucene>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="LuceneAppender"/>
+    </Root>
+  </Loggers>
+</Configuration>
