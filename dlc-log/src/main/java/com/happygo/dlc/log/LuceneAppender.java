@@ -13,7 +13,6 @@
  */
 package com.happygo.dlc.log;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +30,6 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
