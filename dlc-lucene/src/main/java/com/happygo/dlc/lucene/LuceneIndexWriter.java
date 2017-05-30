@@ -22,6 +22,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -62,7 +63,7 @@ public final class LuceneIndexWriter {
 			directory = FSDirectory.open(Paths.get(dirPath));
 			indexWriter = new IndexWriter(directory, indexWriterConfig);
 		} catch (IOException e) {
-			throw new DLCException(e.getMessage(), e);
+			throw new DLCException("initial LuceneIndexWriter failed! exception message is:" + e.getMessage(), e);
 		}
 	}
 
@@ -86,6 +87,7 @@ public final class LuceneIndexWriter {
 	 * @param value
 	 * @param fieldType
 	 */
+	@Deprecated
 	public void addField(Document doc, String name, String value,
 			FieldType fieldType) {
 		Field field = new Field(name, value, fieldType);
@@ -101,7 +103,41 @@ public final class LuceneIndexWriter {
 		try {
 			indexWriter.addDocument(doc);
 		} catch (IOException e) {
-			throw new DLCException(e.getMessage(), e);
+			throw new DLCException("Add document is failed! exception message is:" + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	* @MethodName: numRamDocs
+	* @Description: the numRamDocs
+	* @return int
+	*/
+	public int numRamDocs() {
+		return indexWriter.numDocs();
+	}
+	
+	/**
+	* @MethodName: commit
+	* @Description: the commit
+	*/
+	public void commit() {
+		try {
+			indexWriter.commit();
+		} catch (IOException e) {
+			throw new DLCException("LuceneIndexWriter commit failed! exception message is:" + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	* @MethodName: deleteDocuments
+	* @Description: the deleteDocuments
+	* @param query
+	*/
+	public void deleteDocuments(Query query) {
+		try {
+			indexWriter.deleteDocuments(query);
+		} catch (IOException e) {
+			throw new DLCException("LuceneIndexWriter delete index failed! exception message is:" + e.getMessage(), e);
 		}
 	}
 
@@ -114,7 +150,7 @@ public final class LuceneIndexWriter {
 			indexWriter.close();
 			directory.close();
 		} catch (IOException e) {
-			throw new DLCException(e.getMessage(), e);
+			throw new DLCException("Close indexWriter failed! exception message is:" + e.getMessage(), e);
 		}
 	}
 }
