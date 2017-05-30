@@ -7,7 +7,7 @@ All  right  reserved.
 Created  on  2017年5月30日 上午7:39:31
  -->
  
-<Configuration name="LuceneAppenderTest" packages = "com.wb.testCase">
+<Configuration name="LuceneAppenderTest" packages = "com.happygo.dlc.log">
   <Appenders>
     <Lucene name="LuceneAppender" target = "F:\lucene_index">
     	<IndexField name = "level" pattern = "%-5level" />
