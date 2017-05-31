@@ -200,6 +200,7 @@ public class LuceneAppender extends AbstractAppender {
 					throw new AppenderLoggingException(e);
 				}
 			}
+			indexWriter.addDocument(doc);
 		}
 	}
 	

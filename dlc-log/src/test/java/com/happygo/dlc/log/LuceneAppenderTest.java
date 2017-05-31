@@ -18,8 +18,11 @@ import static org.junit.Assert.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -27,6 +30,14 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.FSDirectory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,6 +59,9 @@ public class LuceneAppenderTest {
 
 	private static final int THREAD_COUNT = 50;
 	
+	private static final String EXEPECTED_REGEX = "INFO "
+			+ LOGGER_NAME + " - " + LOG_MESSAGE;
+	
 	@Before
 	public void setUp() throws FileNotFoundException, IOException {
 		 ConfigurationSource source = new ConfigurationSource(new FileInputStream(CONFIGURATION_FILE));
@@ -57,6 +71,7 @@ public class LuceneAppenderTest {
     @Test
 	public void testSimpleThread() throws Exception {
 		write();
+		verify(3);
 	}
     
 	@Test
@@ -68,6 +83,7 @@ public class LuceneAppenderTest {
 			threadPool.execute(runner);
 		}
 		Thread.sleep(3000);
+		verify(THREAD_COUNT);
 	}
 	
 	private final void write() throws Exception {
@@ -85,6 +101,32 @@ public class LuceneAppenderTest {
 			appender.stop();
 		}
 		assertFalse("Appender did not stop", appender.isStarted());
+	}
+	
+	private final synchronized void verify(final int exepectedTotalHits)
+			throws Exception {
+		final FSDirectory fsDir = FSDirectory.open(Paths
+				.get("F:\\lucene_index"));
+		final IndexReader reader = DirectoryReader.open(fsDir);
+		try {
+			final IndexSearcher searcher = new IndexSearcher(reader);
+			final TopDocs all = searcher.search(new MatchAllDocsQuery(),
+					Integer.MAX_VALUE);
+			for (ScoreDoc scoreDoc : all.scoreDocs) {
+				final Document doc = searcher.doc(scoreDoc.doc);
+				assertEquals(4, doc.getFields().size());
+				final String field1 = doc.get("level");
+				assertTrue("Unexpected field1: " + field1, Level.INFO
+						.toString().equals(field1));
+				final String field2 = doc.get("content");
+				final Pattern pattern = Pattern.compile(EXEPECTED_REGEX);
+				final Matcher matcher = pattern.matcher(field2);
+				assertTrue("Unexpected field2: " + field2, matcher.matches());
+			}
+		} finally {
+			reader.close();
+			fsDir.close();
+		}
 	}
 	
 	private class LuceneAppenderRunner implements Runnable {
