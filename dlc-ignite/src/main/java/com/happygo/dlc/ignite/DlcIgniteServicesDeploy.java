@@ -19,7 +19,6 @@ import org.apache.ignite.services.ServiceConfiguration;
 
 import com.happgo.dlc.base.DLCException;
 import com.happgo.dlc.base.DlcConstants;
-
 /**
  * ClassName:DlcIgniteServicesDeploy
  * 
@@ -52,6 +51,14 @@ public class DlcIgniteServicesDeploy {
 		this.service = service;
 	}
 
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
 	public String getMode() {
 		return mode;
 	}
@@ -59,15 +66,18 @@ public class DlcIgniteServicesDeploy {
 	public void setMode(String mode) {
 		this.mode = mode;
 	}
-
+	
 	/**
-	 * Constructor com.happygo.dlc.ignite.DlcIgniteServicesDeploy
-	 */
-	public DlcIgniteServicesDeploy() {
+	* @MethodName: deploy
+	* @Description: the deploy
+	*/
+	public void deploy() {
 		if (DlcConstants.DEPLOY_CLUSTER_SINGLETON.equals(mode)) {
 			deployClusterSingleton();
-		} else {
+		} else if (DlcConstants.DEPLOY_NODE_SINGLETON.equals(mode)) {
 			deployNodeSingleton();
+		} else {
+			throw new DLCException("This mode is not supported");
 		}
 	}
 	
