@@ -82,7 +82,7 @@ public class LuceneAppender extends AbstractAppender {
 	/**
 	 * LuceneIndexWriter corresponding to each index directory.
 	 */
-    private static final ConcurrentHashMap<String, LuceneIndexWriter> writerMap = new ConcurrentHashMap<String, LuceneIndexWriter>();
+    public static final ConcurrentHashMap<String, LuceneIndexWriter> writerMap = new ConcurrentHashMap<String, LuceneIndexWriter>();
 
 	/**
 	 * Constructor com.happygo.dlc.log.LuceneAppender

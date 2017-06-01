@@ -35,7 +35,11 @@
 			<version>${ignite.version}</version>
 		</dependency>
 		<!-- ignite-api end -->
-
+		<dependency>
+			<groupId>com.happygo.dlc</groupId>
+			<artifactId>dlc-log</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
