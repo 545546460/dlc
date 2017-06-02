@@ -105,8 +105,10 @@ public class LuceneAppender extends AbstractAppender {
 		initLuceneIndexWriter();
 		//注册索引写入器定时提交事务定时器
 		registerCommitTimer();
-		//注册定时清理过期索引文件定时器
-		registerClearTimer();
+		if (expiryTime != null) {
+			//注册定时清理过期索引文件定时器
+			registerClearTimer();
+		}
 	}
 	
 	/**
@@ -224,32 +226,62 @@ public class LuceneAppender extends AbstractAppender {
 			AbstractAppender.Builder<B> implements
 			org.apache.logging.log4j.core.util.Builder<LuceneAppender> {
 
+		/**
+		 * LuceneIndexField[] the indexField 
+		 */
 		@PluginElement("IndexField")
 		@Required(message = "No IndexField provided")
 		private LuceneIndexField[] indexField;
 
+		/**
+		 * Integer the expiryTime 
+		 */
 		@PluginBuilderAttribute
 		private Integer expiryTime;
 
+		/**
+		 * String the target 
+		 */
 		@PluginBuilderAttribute
 		@Required(message = "No target provided")
 		private String target;
 
+		/**
+		* @MethodName: withTarget
+		* @Description: the withTarget
+		* @param target
+		* @return B
+		*/
 		public B withTarget(final String target) {
 			this.target = target;
 			return this.asBuilder();
 		}
 
+		/**
+		* @MethodName: withExpiryTime
+		* @Description: the withExpiryTime
+		* @param expiryTime
+		* @return B
+		*/
 		public B withExpiryTime(final Integer expiryTime) {
 			this.expiryTime = expiryTime;
 			return this.asBuilder();
 		}
 
+		/**
+		* @MethodName: withIndexField
+		* @Description: the withIndexField
+		* @param indexField
+		* @return B
+		*/
 		public B withIndexField(final LuceneIndexField... indexField) {
 			this.indexField = indexField;
 			return this.asBuilder();
 		}
 
+		/* (non-Javadoc)
+		 * @see org.apache.logging.log4j.core.util.Builder#build()
+		 */
 		public LuceneAppender build() {
 			return new LuceneAppender(getName(), isIgnoreExceptions(),
 					getFilter(), this.getLayout(), this.target,

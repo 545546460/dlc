@@ -21,8 +21,8 @@ import org.apache.ignite.services.Service;
 import org.apache.ignite.services.ServiceContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.search.ScoreDoc;
 
+import com.happgo.dlc.base.DlcLog;
 import com.happygo.dlc.ignite.task.DlcIgniteTask;
 
 /**
@@ -55,7 +55,7 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	 * @param keyWord
 	 * @see com.happygo.dlc.ignite.service.DlcIgniteService#logQuery(java.lang.String) 
 	 */
-	public List<ScoreDoc> logQuery(String keyWord) {
+	public List<DlcLog> logQuery(String keyWord) {
 		return ignite.compute().execute(DlcIgniteTask.class, keyWord);
 	}
 

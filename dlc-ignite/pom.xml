@@ -33,6 +33,12 @@
 			<groupId>org.apache.ignite</groupId>
 			<artifactId>ignite-indexing</artifactId>
 			<version>${ignite.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.lucene</groupId>
+					<artifactId>lucene-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- ignite-api end -->
 		<dependency>

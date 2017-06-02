@@ -22,10 +22,10 @@ package com.happgo.dlc.base;
  */
 public interface DlcConstants {
 	
-	/** 
-	* The field DLC_LOG_ID
-	*/
-	String DLC_LOG_ID = "logId";
+	/**
+	 * String the DLC_HOST_IP 
+	 */
+	String DLC_HOST_IP = "hostIp";
 	
 	/** 
 	* The field DLC_TIME
