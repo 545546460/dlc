@@ -47,13 +47,10 @@ public class DlcIgniteServicesExporter {
 	/**
 	 * Ignite the ignite 
 	 */
-	private final Ignite ignite;
+	private static final Ignite ignite;
 	
-	/**
-	 * Constructor com.happygo.dlc.ignite.DlcIgniteServicesExporter
-	 */
-	public DlcIgniteServicesExporter() {
-		this.ignite = Ignition.start("config/dlc-ignite.xml");
+	static {
+		ignite = Ignition.start("config/dlc-ignite.xml");
 	}
 	
 	/**
