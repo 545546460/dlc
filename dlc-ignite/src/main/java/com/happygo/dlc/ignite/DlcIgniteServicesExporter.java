@@ -96,10 +96,10 @@ public class DlcIgniteServicesExporter {
 	}
 	
 	/**
-	 * @MethodName: deploy
-	 * @Description: the deploy
-	 */
-	public void deploy() {
+	* @MethodName: export
+	* @Description: the export
+	*/
+	public void export() {
 		if (!Service.class.isAssignableFrom(service.getClass())) {
 			throw new DLCException(
 					"This ignite service is not 'Services' object");
