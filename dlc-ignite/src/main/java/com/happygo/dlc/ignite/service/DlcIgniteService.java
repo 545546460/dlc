@@ -15,7 +15,7 @@ package com.happygo.dlc.ignite.service;
 
 import java.util.List;
 
-import org.apache.lucene.search.ScoreDoc;
+import com.happgo.dlc.base.DlcLog;
 
 /**
  * ClassName:DlcIgniteService
@@ -28,10 +28,11 @@ public interface DlcIgniteService {
 	
 	/**
 	* @MethodName: logQuery
-	* @Description: the method logQuery
+	* @Description: the logQuery
 	* @param keyWord
-	* @return List<ScoreDoc>
+	* @return
+	* @return List<DlcLog>
 	*/
-	List<ScoreDoc> logQuery(String keyWord);
+	List<DlcLog> logQuery(String keyWord);
 
 }

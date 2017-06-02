@@ -73,6 +73,9 @@ public class LuceneIndexField {
 		return type;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "{name=" + this.name + ", layout=" + this.layout + " }";
@@ -99,17 +102,29 @@ public class LuceneIndexField {
 			AbstractFilterable.Builder<B> implements
 			org.apache.logging.log4j.core.util.Builder<LuceneIndexField> {
 
+		/**
+		 * Configuration the configuration 
+		 */
 		@PluginConfiguration
 		private Configuration configuration;
 
+		/**
+		 * String the name 
+		 */
 		@PluginBuilderAttribute
 		@Required(message = "No name provided")
 		private String name;
 
+		/**
+		 * String the pattern 
+		 */
 		@PluginBuilderAttribute
 		@Required(message = "No pattern provided")
 		private String pattern;
 
+		/**
+		 * String the type 
+		 */
 		@PluginBuilderAttribute
 		private String type;
 
