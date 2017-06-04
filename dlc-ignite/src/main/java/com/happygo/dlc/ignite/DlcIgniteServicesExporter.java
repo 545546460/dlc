@@ -20,6 +20,7 @@ import org.apache.ignite.services.Service;
 
 import com.happgo.dlc.base.DLCException;
 import com.happgo.dlc.base.DlcConstants;
+
 /**
  * DlcIgniteServicesExporter
  * 
@@ -28,31 +29,26 @@ import com.happgo.dlc.base.DlcConstants;
  * @date:2017年6月1日 下午3:25:32
  */
 public class DlcIgniteServicesExporter {
-	
-	/** 
-	* The field service
-	*/
+
+	/**
+	 * The field service
+	 */
 	private Object service;
-	
-	/** 
-	* The field serviceName
-	*/
-	private String serviceName;
-	
-	/** 
-	* The field mode
-	*/
+
+	/**
+	 * The field mode
+	 */
 	private String mode;
 
 	/**
-	 * Ignite the ignite 
+	 * Ignite the ignite
 	 */
 	private static final Ignite ignite;
-	
+
 	static {
 		ignite = Ignition.start("config/dlc-ignite.xml");
 	}
-	
+
 	/**
 	 * @return the service
 	 */
@@ -61,24 +57,11 @@ public class DlcIgniteServicesExporter {
 	}
 
 	/**
-	 * @param service the service to set
+	 * @param service
+	 *            the service to set
 	 */
 	public void setService(Object service) {
 		this.service = service;
-	}
-
-	/**
-	 * @return the serviceName
-	 */
-	public String getServiceName() {
-		return serviceName;
-	}
-
-	/**
-	 * @param serviceName the serviceName to set
-	 */
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
 	}
 
 	/**
@@ -89,30 +72,33 @@ public class DlcIgniteServicesExporter {
 	}
 
 	/**
-	 * @param mode the mode to set
+	 * @param mode
+	 *            the mode to set
 	 */
 	public void setMode(String mode) {
 		this.mode = mode;
 	}
-	
+
 	/**
-	* @MethodName: export
-	* @Description: the export
-	*/
+	 * @MethodName: export
+	 * @Description: the export
+	 */
 	public void export() {
 		if (!Service.class.isAssignableFrom(service.getClass())) {
 			throw new DLCException(
 					"This ignite service is not 'Services' object");
 		}
-		
+
 		IgniteServices svcs = ignite.services();
 		switch (mode) {
 		case DlcConstants.DEPLOY_CLUSTER_SINGLETON:
-			svcs.deployClusterSingleton(serviceName, (Service) service);
+			svcs.deployClusterSingleton(
+					DlcConstants.DLC_LOG_QUERY_SERVICE_NAME, (Service) service);
 			break;
 
 		case DlcConstants.DEPLOY_NODE_SINGLETON:
-			svcs.deployNodeSingleton(serviceName, (Service) service);
+			svcs.deployNodeSingleton(DlcConstants.DLC_LOG_QUERY_SERVICE_NAME,
+					(Service) service);
 			break;
 
 		default:

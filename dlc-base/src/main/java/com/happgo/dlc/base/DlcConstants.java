@@ -66,4 +66,9 @@ public interface DlcConstants {
 	* The field DEPLOY_NODE_SINGLETON
 	*/
 	String DEPLOY_NODE_SINGLETON = "nodeSingleton";
+	
+	/**
+	 * String the DLC_LOG_QUERY_SERVICE_NAME 
+	 */
+	String DLC_LOG_QUERY_SERVICE_NAME = "dlcIgniteService";
 }
