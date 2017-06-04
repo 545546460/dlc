@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.happgo.dlc.base.DlcLog;
+import com.happgo.dlc.base.ignite.service.DlcIgniteService;
 import com.happygo.dlc.ignite.task.DlcIgniteTask;
 
 /**

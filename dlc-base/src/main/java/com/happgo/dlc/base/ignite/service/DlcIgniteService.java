@@ -5,13 +5,13 @@
  *
  * Created  on  2017年6月1日 下午3:10:14
  *
- * @Package com.happygo.dlc.ignite  
+ * @Package com.happgo.dlc.base.ignite.service  
  * @Title: DlcIgniteService.java
  * @Description: DlcIgniteService.java
  * @author sxp (1378127237@qq.com) 
  * @version 1.0.0 
  */
-package com.happygo.dlc.ignite.service;
+package com.happgo.dlc.base.ignite.service;
 
 import java.util.List;
 

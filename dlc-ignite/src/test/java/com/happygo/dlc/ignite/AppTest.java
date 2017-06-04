@@ -1,4 +1,4 @@
-package org.dlc.ignite;
+package com.happygo.dlc.ignite;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
