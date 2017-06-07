@@ -137,8 +137,8 @@ public class DlcIgniteTask extends ComputeTaskAdapter<String, List<DlcLog>>{
 			String content = iSearcher.luceneHighlighter.getBestFragment(
 					analyzer, doc, DlcConstants.DLC_CONTENT);
 			String level = doc.get(DlcConstants.DLC_LEVEL);
-			long time = (Long) doc.getField(DlcConstants.DLC_TIME)
-					.numericValue();
+			long time = (doc.getField(DlcConstants.DLC_TIME)) == null ? 0
+					: (Long) doc.getField(DlcConstants.DLC_TIME).numericValue();
 			String hostIp = doc.get(DlcConstants.DLC_HOST_IP);
 			dlcLog = new DlcLog(content, level, time, hostIp);
 			dlcLogs.add(dlcLog);
