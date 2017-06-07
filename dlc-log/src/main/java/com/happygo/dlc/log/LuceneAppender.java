@@ -103,8 +103,6 @@ public class LuceneAppender extends AbstractAppender {
 		this.indexFields = indexFields;
 		//初始化writeMap
 		initLuceneIndexWriter();
-		//注册索引写入器定时提交事务定时器
-		registerCommitTimer();
 		if (expiryTime != null) {
 			//注册定时清理过期索引文件定时器
 			registerClearTimer();
@@ -122,21 +120,6 @@ public class LuceneAppender extends AbstractAppender {
 					new StandardAnalyzer(), this.target));
 		}
 		return writerMap.get(target);
-	}
-	
-	/**
-	* @MethodName: registerCommitTimer
-	* @Description: the registerCommitTimer
-	*/
-	private void registerCommitTimer() {
-		scheduledExecutor.scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				LuceneIndexWriter indexWriter = initLuceneIndexWriter();
-				if (null != indexWriter && indexWriter.numRamDocs() > 0) {
-					indexWriter.commit();
-				}
-			}
-		}, 1, 1, TimeUnit.MINUTES);
 	}
 	
 	/**
@@ -203,6 +186,7 @@ public class LuceneAppender extends AbstractAppender {
 				}
 			}
 			indexWriter.addDocument(doc);
+			indexWriter.commit();
 		}
 	}
 	
