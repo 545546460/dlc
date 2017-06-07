@@ -126,6 +126,9 @@ public class DlcIgniteTask extends ComputeTaskAdapter<String, List<DlcLog>>{
 	 */
 	public static List<DlcLog> buildDlcLogs(ScoreDoc[] scoreDocs,
 			LuceneIndexSearcher iSearcher, Analyzer analyzer) {
+		if (scoreDocs == null || scoreDocs.length == 0) {
+			return null;
+		}
 		List<DlcLog> dlcLogs = new ArrayList<>();
 		DlcLog dlcLog = null;
 		Document doc = null;
