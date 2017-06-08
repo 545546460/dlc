@@ -27,6 +27,11 @@ public interface DlcConstants {
 	 */
 	String DLC_HOST_IP = "hostIp";
 	
+	/**
+	 * String SYSTEM_NAME
+	 */
+	String SYSTEM_NAME = "systemName";
+	
 	/** 
 	* The field DLC_TIME
 	*/
@@ -55,7 +60,7 @@ public interface DlcConstants {
 	/** 
 	* The field DLC_FRAGMENT_SIZE
 	*/
-	int DLC_FRAGMENT_SIZE = 50;
+	int DLC_FRAGMENT_SIZE = Integer.MAX_VALUE;
 	
 	/** 
 	* The field DEPLOY_CLUSTER_SINGLETON

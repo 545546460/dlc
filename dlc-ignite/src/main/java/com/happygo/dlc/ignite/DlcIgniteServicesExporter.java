@@ -13,10 +13,15 @@
  */
 package com.happygo.dlc.ignite;
 
+import java.net.InetAddress;
+
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteServices;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.services.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import com.happgo.dlc.base.DLCException;
 import com.happgo.dlc.base.DlcConstants;
@@ -44,6 +49,11 @@ public class DlcIgniteServicesExporter {
 	 * Ignite the ignite
 	 */
 	private static final Ignite ignite;
+	
+	/**
+	 * The LOOGER
+	 */
+	private static final Logger LOGGER = LogManager.getLogger(DlcIgniteServicesExporter.class);
 
 	static {
 		ignite = Ignition.start("config/dlc-ignite.xml");
@@ -84,11 +94,16 @@ public class DlcIgniteServicesExporter {
 	 * @Description: the export
 	 */
 	public void export() {
+		try {
+			ThreadContext.put("hostIp", InetAddress.getLocalHost().getHostAddress());
+		} catch (Exception e) {
+			LOGGER.warn("<<<=== Do not get the node hostIp ===>>>");
+		}
 		if (!Service.class.isAssignableFrom(service.getClass())) {
 			throw new DLCException(
 					"This ignite service is not 'Services' object");
 		}
-
+	
 		IgniteServices svcs = ignite.services();
 		switch (mode) {
 		case DlcConstants.DEPLOY_CLUSTER_SINGLETON:
@@ -104,5 +119,6 @@ public class DlcIgniteServicesExporter {
 		default:
 			throw new DLCException("The mode '" + mode + "' is not supported!");
 		}
+		LOGGER.info("<<<=== Dlc ignite service deploy successfully ===>>>");
 	}
 }
