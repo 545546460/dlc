@@ -110,8 +110,15 @@ public class DlcIgniteTask extends ComputeTaskAdapter<String, List<DlcLog>>{
 	public List<DlcLog> reduce(List<ComputeJobResult> results)
 			throws IgniteException {
 		List<DlcLog> dlcLogs = new ArrayList<DlcLog>();
+		if (results == null || results.isEmpty()) {
+			return null;
+		}
 		for (final ComputeJobResult res : results) {
-			dlcLogs.addAll(res.<List<DlcLog>> getData());
+			List<DlcLog> dataList = res.<List<DlcLog>> getData();
+			if (dataList == null || dataList.isEmpty()) {
+				continue;
+			}
+			dlcLogs.addAll(dataList);
 		}
 		return dlcLogs;
 	}
@@ -140,7 +147,8 @@ public class DlcIgniteTask extends ComputeTaskAdapter<String, List<DlcLog>>{
 			long time = (doc.getField(DlcConstants.DLC_TIME)) == null ? 0
 					: (Long) doc.getField(DlcConstants.DLC_TIME).numericValue();
 			String hostIp = doc.get(DlcConstants.DLC_HOST_IP);
-			dlcLog = new DlcLog(content, level, time, hostIp);
+			String systemName = doc.get(DlcConstants.SYSTEM_NAME);
+			dlcLog = new DlcLog(content, level, time, hostIp, systemName);
 			dlcLogs.add(dlcLog);
 		}
 		return dlcLogs;

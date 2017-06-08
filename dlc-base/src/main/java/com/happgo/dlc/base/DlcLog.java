@@ -40,6 +40,11 @@ public class DlcLog {
 	 * String the hostIp 
 	 */
 	private String hostIp;
+	
+	/**
+	 * 
+	 */
+	private String systemName;
 
 	/**
 	 * Constructor com.happgo.dlc.base.DlcLog
@@ -47,12 +52,14 @@ public class DlcLog {
 	 * @param level
 	 * @param time
 	 * @param hostIp
+	 * @param systemName
 	 */
-	public DlcLog(String content, String level, long time, String hostIp) {
+	public DlcLog(String content, String level, long time, String hostIp, String systemName) {
 		this.content = content;
 		this.level = level;
 		this.time = time;
 		this.hostIp = hostIp;
+		this.systemName = systemName;
 	}
 
 	/**
@@ -109,5 +116,19 @@ public class DlcLog {
 	 */
 	public void setHostIp(String hostIp) {
 		this.hostIp = hostIp;
+	}
+
+	/**
+	 * @return the systemName
+	 */
+	public String getSystemName() {
+		return systemName;
+	}
+
+	/**
+	 * @param systemName the systemName to set
+	 */
+	public void setSystemName(String systemName) {
+		this.systemName = systemName;
 	}
 }
