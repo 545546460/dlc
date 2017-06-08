@@ -14,6 +14,7 @@
 package com.happygo.dlc.log;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -34,9 +35,11 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.NumericRangeQuery;
 
 import com.happgo.dlc.base.Assert;
+import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.Strings;
 import com.happygo.dlc.lucene.DocumentUtils;
 import com.happygo.dlc.lucene.LuceneIndexWriter;
@@ -169,10 +172,16 @@ public class LuceneAppender extends AbstractAppender {
 			doc.add(new LongField("timestamp", event.getTimeMillis(),
 					Field.Store.YES));
 			try {
+				String hostIp = InetAddress.getLocalHost().getHostAddress();
+				doc.add(new TextField(DlcConstants.DLC_HOST_IP, hostIp, Field.Store.YES));
+			} catch (Exception e) {
+				LOGGER.warn("<<<=== Do not get the node hostIp ===>>>");
+			}
+			try {
 				for (final LuceneIndexField field : indexFields) {
 					String value = field.getLayout().toSerializable(event);
 					if (Strings.isEmpty(value) || value.matches("[$]\\{.+\\}")) {
-						return;
+						continue;
 					}
 					value = value.trim();
 					String type = field.getType();
