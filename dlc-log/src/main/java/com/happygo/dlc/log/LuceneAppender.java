@@ -15,6 +15,7 @@ package com.happygo.dlc.log;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -31,7 +32,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
@@ -120,7 +121,7 @@ public class LuceneAppender extends AbstractAppender {
 	private LuceneIndexWriter initLuceneIndexWriter() {
 		if (null == writerMap.get(target)) {
 			writerMap.putIfAbsent(target, LuceneIndexWriter.indexWriter(
-					new StandardAnalyzer(), this.target));
+					new KeywordAnalyzer(), this.target));
 		}
 		return writerMap.get(target);
 	}
@@ -165,38 +166,43 @@ public class LuceneAppender extends AbstractAppender {
 	 * .core.LogEvent)
 	 */
 	public void append(LogEvent event) {
-		if (indexFields != null && indexFields.length > 0) {
-			LuceneIndexWriter indexWriter = initLuceneIndexWriter();
-			Assert.isNull(indexWriter);
-			Document doc = new Document();
-			doc.add(new LongField("timestamp", event.getTimeMillis(),
-					Field.Store.YES));
-			try {
-				String hostIp = InetAddress.getLocalHost().getHostAddress();
-				doc.add(new TextField(DlcConstants.DLC_HOST_IP, hostIp, Field.Store.YES));
-			} catch (Exception e) {
-				LOGGER.warn("<<<=== Do not get the node hostIp ===>>>");
-			}
-			try {
-				for (final LuceneIndexField field : indexFields) {
-					String value = field.getLayout().toSerializable(event);
-					if (Strings.isEmpty(value) || value.matches("[$]\\{.+\\}")) {
-						continue;
-					}
-					value = value.trim();
-					String type = field.getType();
-					String name = field.getName();
-					DocumentUtils.addFieldByType(doc, type, name, value);
-				}
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
-				if (!ignoreExceptions()) {
-					throw new AppenderLoggingException(e);
-				}
-			}
-			indexWriter.addDocument(doc);
-			indexWriter.commit();
+		if (indexFields == null || indexFields.length == 0) {
+			return;
 		}
+
+		LuceneIndexWriter indexWriter = initLuceneIndexWriter();
+		Assert.isNull(indexWriter);
+		Document doc = new Document();
+		doc.add(new LongField("timestamp", event.getTimeMillis(),
+				Field.Store.YES));
+		try {
+			String hostIp = InetAddress.getLocalHost().getHostAddress();
+			doc.add(new TextField(DlcConstants.DLC_HOST_IP, hostIp,
+					Field.Store.YES));
+			for (final LuceneIndexField field : indexFields) {
+				String name = field.getName();
+				String value = DlcConstants.DLC_CONTENT.equals(name) ? field
+						.getLayout().toSerializable(event) : ((event
+						.getThrown() == null) ? field.getLayout()
+						.toSerializable(event) : Strings.cutLatersubString(
+						field.getLayout().toSerializable(event), " "));
+				if (Strings.isEmpty(value) || value.matches("[$]\\{.+\\}")) {
+					continue;
+				}
+				value = value.trim();
+				String type = field.getType();
+				DocumentUtils.addFieldByType(doc, type, name, value);
+			}
+		} catch (UnknownHostException e) {
+			LOGGER.warn("<<<=== Do not get the node hostIp ===>>>");
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			if (!ignoreExceptions()) {
+				throw new AppenderLoggingException(e);
+			}
+		}
+		indexWriter.addDocument(doc);
+		indexWriter.commit();
 	}
 	
 	/**
