@@ -45,4 +45,16 @@ public class Strings {
 	public static boolean isEmpty(String str) {
 		return (str == null || "".equals(str)) ? true : false;
 	}
+	
+	/**
+	* @MethodName: cutLatersubString
+	* @Description: the cutLatersubString
+	* @param source
+	* @param firstToken
+	* @return String
+	*/
+	public static String cutLatersubString(String source, String firstToken) {
+		int firstTokenPosition = source.indexOf(firstToken);
+		return source.substring(0, firstTokenPosition);
+	}
 }
