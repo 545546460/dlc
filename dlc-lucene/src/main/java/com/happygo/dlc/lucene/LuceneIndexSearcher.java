@@ -136,7 +136,7 @@ public final class LuceneIndexSearcher {
 					occurs, analyzer);
 			luceneHighlighter = LuceneHighlighter.highlight(preTag, postTag,
 					query, fragmentSize);
-			scoreDocs = indexSearcher.search(query, 10000).scoreDocs;
+			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE).scoreDocs;
 		} catch (Exception e) {
 			throw new DLCException(e.getMessage(), e);
 		}
