@@ -24,6 +24,7 @@ import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
@@ -106,6 +107,33 @@ public final class LuceneIndexSearcher {
 			String postTag, int fragmentSize) {
 		Term term = new Term(fieldName, text);
 		Query query = new FuzzyQuery(term);
+		luceneHighlighter = LuceneHighlighter.highlight(preTag, postTag, query,
+				fragmentSize);
+		ScoreDoc[] scoreDocs;
+		try {
+			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE).scoreDocs;
+		} catch (IOException e) {
+			throw new DLCException(e.getMessage(), e);
+		}
+		return scoreDocs;
+	}
+	
+	/**
+	* @MethodName: phraseSearch
+	* @Description: the phraseSearch
+	* @param fieldName
+	* @param text
+	* @param preTag
+	* @param postTag
+	* @param fragmentSize
+	* @return ScoreDoc[]
+	*/
+	public ScoreDoc[] phraseSearch(String fieldName, String text, String preTag,
+			String postTag, int fragmentSize) {
+		Term term = new Term(fieldName, text);
+		PhraseQuery.Builder builder = new PhraseQuery.Builder();
+		builder.add(term);
+		PhraseQuery query = builder.build();
 		luceneHighlighter = LuceneHighlighter.highlight(preTag, postTag, query,
 				fragmentSize);
 		ScoreDoc[] scoreDocs;

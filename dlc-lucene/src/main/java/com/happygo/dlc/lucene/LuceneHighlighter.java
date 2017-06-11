@@ -14,7 +14,6 @@
 package com.happygo.dlc.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.Formatter;
@@ -88,7 +87,7 @@ public class LuceneHighlighter {
 	public String getBestFragment(Analyzer analyzer, Document doc,
 			String fieldName) {
 		try {
-			return highlighter.getBestFragment(new StandardAnalyzer(),
+			return highlighter.getBestFragment(analyzer,
 					fieldName, doc.get(fieldName));
 		} catch (Exception e) {
 			throw new DLCException(e.getMessage(), e);
@@ -106,7 +105,7 @@ public class LuceneHighlighter {
 	public String getBestFragment(Analyzer analyzer, String fieldName,
 			String text) {
 		try {
-			return highlighter.getBestFragment(new StandardAnalyzer(),
+			return highlighter.getBestFragment(analyzer,
 					fieldName, text);
 		} catch (Exception e) {
 			throw new DLCException(e.getMessage(), e);

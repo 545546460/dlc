@@ -90,7 +90,7 @@ public class DlcIgniteTask extends ComputeTaskAdapter<String, List<DlcLog>>{
 					KeywordAnalyzer analyzer = new KeywordAnalyzer();
 					LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
 							.indexSearcher(targetPath, analyzer);
-					ScoreDoc[] scoreDocs = indexSearcher.fuzzySearch(DlcConstants.DLC_CONTENT,
+					ScoreDoc[] scoreDocs = indexSearcher.phraseSearch(DlcConstants.DLC_CONTENT,
 							keyWord, DlcConstants.DLC_HIGHLIGHT_PRE_TAG,
 							DlcConstants.DLC_HIGHLIGHT_POST_TAG,
 							DlcConstants.DLC_FRAGMENT_SIZE);
