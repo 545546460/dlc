@@ -15,7 +15,7 @@ package com.happgo.dlc.base.ignite.service;
 
 import java.util.List;
 
-import com.happgo.dlc.base.DlcLog;
+import com.happgo.dlc.base.bean.DlcLog;
 
 /**
  * ClassName:DlcIgniteService
@@ -30,9 +30,9 @@ public interface DlcIgniteService {
 	* @MethodName: logQuery
 	* @Description: the logQuery
 	* @param keyWord
-	* @return
+	* @param queryMode
 	* @return List<DlcLog>
 	*/
-	List<DlcLog> logQuery(String keyWord);
+	List<DlcLog> logQuery(String keyWord, String queryMode);
 
 }

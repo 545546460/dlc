@@ -20,7 +20,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
 import com.happgo.dlc.base.DLCException;
-import com.happgo.dlc.base.Strings;
+import com.happgo.dlc.base.util.Strings;
 
 /**
  * ClassName:DocumentUtils

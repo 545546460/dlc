@@ -22,9 +22,11 @@ import org.apache.ignite.services.ServiceContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.happgo.dlc.base.DlcLog;
+import com.happgo.dlc.base.DlcConstants;
+import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.ignite.service.DlcIgniteService;
-import com.happygo.dlc.ignite.task.DlcIgniteTask;
+import com.happygo.dlc.ignite.task.DlcKeywordSearchTask;
+import com.happygo.dlc.ignite.task.DlcMoreLikeThisSearchTask;
 
 /**
  * ClassName:DlcIgniteServiceImpl
@@ -56,8 +58,11 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	 * @param keyWord
 	 * @see com.happygo.dlc.ignite.service.DlcIgniteService#logQuery(java.lang.String) 
 	 */
-	public List<DlcLog> logQuery(String keyWord) {
-		return ignite.compute().execute(DlcIgniteTask.class, keyWord);
+	public List<DlcLog> logQuery(String keyWord, String queryMode) {
+		if (DlcConstants.DLC_MORE_LIKE_THIS_QUERY_MODE.equals(queryMode)) {
+			return ignite.compute().execute(DlcMoreLikeThisSearchTask.class, keyWord);
+		}
+		return ignite.compute().execute(DlcKeywordSearchTask.class, keyWord);
 	}
 
 	/**

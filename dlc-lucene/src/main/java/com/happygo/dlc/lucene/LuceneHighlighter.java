@@ -24,8 +24,8 @@ import org.apache.lucene.search.highlight.Scorer;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 
-import com.happgo.dlc.base.Assert;
 import com.happgo.dlc.base.DLCException;
+import com.happgo.dlc.base.util.Assert;
 
 /**
  * ClassName:LuceneHighlighter

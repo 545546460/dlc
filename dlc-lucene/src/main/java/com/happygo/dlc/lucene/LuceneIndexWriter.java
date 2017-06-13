@@ -26,8 +26,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import com.happgo.dlc.base.Assert;
 import com.happgo.dlc.base.DLCException;
+import com.happgo.dlc.base.util.Assert;
 
 /**
  * ClassName:LuceneIndexWriter
