@@ -39,9 +39,9 @@ import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.NumericRangeQuery;
 
-import com.happgo.dlc.base.Assert;
 import com.happgo.dlc.base.DlcConstants;
-import com.happgo.dlc.base.Strings;
+import com.happgo.dlc.base.util.Assert;
+import com.happgo.dlc.base.util.Strings;
 import com.happygo.dlc.lucene.DocumentUtils;
 import com.happygo.dlc.lucene.LuceneIndexWriter;
 

@@ -76,4 +76,14 @@ public interface DlcConstants {
 	 * String the DLC_LOG_QUERY_SERVICE_NAME 
 	 */
 	String DLC_LOG_QUERY_SERVICE_NAME = "dlcIgniteService";
+	
+	/**
+	 * String the DLC_MORE_LIKE_THIS_QUERY_MODE 
+	 */
+	String DLC_MORE_LIKE_THIS_QUERY_MODE = "moreLikeThis";
+	
+	/**
+	 * String the SYMBOL_AT 
+	 */
+	String SYMBOL_AT = "@";
 }

@@ -5,13 +5,13 @@
 *
 * Created  on  2017年6月2日 下午8:07:31
 *
-* @Package com.happgo.dlc.base  
+* @Package com.happgo.dlc.base.bean 
 * @Title: DlcLog.java
 * @Description: DlcLog.java
 * @author sxp (1378127237@qq.com) 
 * @version 1.0.0 
 */
-package com.happgo.dlc.base;
+package com.happgo.dlc.base.bean;
 
 /**
  * ClassName:DlcLog

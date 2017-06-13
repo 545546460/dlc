@@ -6,8 +6,8 @@
  * Created  on  2017年6月1日 下午4:12:19
  *
  * @Package com.happygo.dlc.ignite.task  
- * @Title: DlcIgniteTask.java
- * @Description: DlcIgniteTask.java
+ * @Title: DlcKeywordSearchTask.java
+ * @Description: DlcKeywordSearchTask.java
  * @author sxp (1378127237@qq.com) 
  * @version 1.0.0 
  */
@@ -33,19 +33,19 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
 
 import com.happgo.dlc.base.DlcConstants;
-import com.happgo.dlc.base.DlcLog;
+import com.happgo.dlc.base.bean.DlcLog;
 import com.happygo.dlc.log.LuceneAppender;
 import com.happygo.dlc.lucene.LuceneIndexSearcher;
 import com.happygo.dlc.lucene.LuceneIndexWriter;
 
 /**
- * ClassName:DlcIgniteTask
+ * ClassName:DlcKeywordSearchTask
  * 
  * @Description: DlcIgniteTask.java
  * @author sxp (1378127237@qq.com)
  * @date:2017年6月1日 下午4:12:19
  */
-public class DlcIgniteTask extends ComputeTaskAdapter<String, List<DlcLog>>{
+public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog>>{
 
 	/** 
 	* The field serialVersionUID
@@ -55,7 +55,7 @@ public class DlcIgniteTask extends ComputeTaskAdapter<String, List<DlcLog>>{
 	/** 
 	* The field LOGEER
 	*/
-	private static final Logger LOGEER = LogManager.getLogger(DlcIgniteTask.class);
+	private static final Logger LOGEER = LogManager.getLogger(DlcKeywordSearchTask.class);
 
 	/**
 	* map

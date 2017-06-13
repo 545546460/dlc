@@ -24,14 +24,15 @@ import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import com.happgo.dlc.base.Assert;
 import com.happgo.dlc.base.DLCException;
+import com.happgo.dlc.base.util.Assert;
 
 /**
  * ClassName:LuceneIndexSearcher
@@ -136,6 +137,22 @@ public final class LuceneIndexSearcher {
 		PhraseQuery query = builder.build();
 		luceneHighlighter = LuceneHighlighter.highlight(preTag, postTag, query,
 				fragmentSize);
+		ScoreDoc[] scoreDocs;
+		try {
+			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE).scoreDocs;
+		} catch (IOException e) {
+			throw new DLCException(e.getMessage(), e);
+		}
+		return scoreDocs;
+	}
+	
+	/**
+	* @MethodName: matchAllDocsSearch
+	* @Description: the matchAllDocsSearch
+	* @return ScoreDoc[]
+	*/
+	public ScoreDoc[] matchAllDocsSearch() {
+		MatchAllDocsQuery query = new MatchAllDocsQuery();
 		ScoreDoc[] scoreDocs;
 		try {
 			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE).scoreDocs;

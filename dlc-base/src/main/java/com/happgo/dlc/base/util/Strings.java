@@ -5,13 +5,13 @@
 *
 * Created  on  2017年5月30日 下午6:44:15
 *
-* @Package com.happgo.dlc.base  
+* @Package com.happgo.dlc.base.util  
 * @Title: Strings.java
 * @Description: Strings.java
 * @author sxp (1378127237@qq.com) 
 * @version 1.0.0 
 */
-package com.happgo.dlc.base;
+package com.happgo.dlc.base.util;
 
 /**
  * ClassName:Strings
