@@ -28,10 +28,13 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import com.happgo.dlc.base.DLCException;
+import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.util.Assert;
 
 /**
@@ -139,7 +142,10 @@ public final class LuceneIndexSearcher {
 				fragmentSize);
 		ScoreDoc[] scoreDocs;
 		try {
-			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE).scoreDocs;
+			SortField sortField = new SortField(DlcConstants.DLC_TIME, 
+					SortField.Type.LONG, true);
+			Sort sort = new Sort(sortField);
+			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE, sort).scoreDocs;
 		} catch (IOException e) {
 			throw new DLCException(e.getMessage(), e);
 		}
@@ -155,7 +161,10 @@ public final class LuceneIndexSearcher {
 		MatchAllDocsQuery query = new MatchAllDocsQuery();
 		ScoreDoc[] scoreDocs;
 		try {
-			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE).scoreDocs;
+			SortField sortField = new SortField(DlcConstants.DLC_TIME, 
+					SortField.Type.LONG, true);
+			Sort sort = new Sort(sortField);
+			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE, sort).scoreDocs;
 		} catch (IOException e) {
 			throw new DLCException(e.getMessage(), e);
 		}
