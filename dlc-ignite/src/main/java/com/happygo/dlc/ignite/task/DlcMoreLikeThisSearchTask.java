@@ -39,6 +39,7 @@ import org.apache.lucene.search.ScoreDoc;
 import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.util.CollectionUtils;
+import com.happgo.dlc.base.util.Strings;
 import com.happygo.dlc.ignite.callback.DlcMoreLikeThisCallback;
 import com.happygo.dlc.log.LuceneAppender;
 import com.happygo.dlc.lucene.LuceneIndexSearcher;
@@ -97,9 +98,11 @@ public class DlcMoreLikeThisSearchTask extends
 
 				@Override
 				public Object execute() {
-					LOGEER.info(">>> Search keyWord '" + keyWord
-							+ "' on this node from target path '" + targetPath
-							+ "'");
+					if (LOGEER.isDebugEnabled()) {
+						LOGEER.debug(">>> Search keyWord '" + keyWord
+								+ "' on this node from target path '" + targetPath
+								+ "'");
+					}
 					KeywordAnalyzer analyzer = new KeywordAnalyzer();
 					LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
 							.indexSearcher(targetPath, analyzer);
@@ -156,6 +159,11 @@ public class DlcMoreLikeThisSearchTask extends
 		 * long the serialVersionUID
 		 */
 		private static final long serialVersionUID = 5081026869134294235L;
+		
+		/**
+		 * The field LOGEER
+		 */
+		private static final Logger LOGEER = LogManager.getLogger(DlcMoreLikeThisComputeJob.class);
 
 		/*
 		 * (non-Javadoc)
@@ -195,10 +203,15 @@ public class DlcMoreLikeThisSearchTask extends
 
 					@Override
 					public Object execute() {
-						KeywordAnalyzer analyzer = new KeywordAnalyzer();
 						String[] splitStrArray = firstEntry.getKey().split(DlcConstants.SYMBOL_AT);
 						String targetPath = splitStrArray[0];
 						String keyWord = splitStrArray[1];
+						if (LOGEER.isDebugEnabled()) {
+							LOGEER.debug(">>> Filter keyWord '" + keyWord
+									+ "' on this node from target path '" + targetPath
+									+ "'");
+						}
+						KeywordAnalyzer analyzer = new KeywordAnalyzer();
 						LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
 								.indexSearcher(targetPath, analyzer);
 						return filterScoreDocsAndBuildDlcLogs(subScoreDocList,
@@ -252,6 +265,8 @@ public class DlcMoreLikeThisSearchTask extends
 				doc = iSearcher.hitDocument(scoreDoc);
 				String content = doc.get(DlcConstants.DLC_CONTENT);
 				if (content.contains(keyWord)) {
+					content = Strings.fillPreAndPostTagOnTargetString(DlcConstants.DLC_HIGHLIGHT_PRE_TAG, 
+							DlcConstants.DLC_HIGHLIGHT_POST_TAG, keyWord, content);
 					String level = doc.get(DlcConstants.DLC_LEVEL);
 					long time = (doc.getField(DlcConstants.DLC_TIME)) == null ? 0
 							: (Long) doc.getField(DlcConstants.DLC_TIME)
