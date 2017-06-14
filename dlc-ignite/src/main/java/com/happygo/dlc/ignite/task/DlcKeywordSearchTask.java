@@ -84,9 +84,11 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
 
 				@Override
 				public Object execute() {
-					LOGEER.info(">>> Search keyWord '" + keyWord
-							+ "' on this node from target path '" + targetPath
-							+ "'");
+					if (LOGEER.isDebugEnabled()) {
+						LOGEER.info(">>> Search keyWord '" + keyWord
+								+ "' on this node from target path '" + targetPath
+								+ "'");
+					}
 					KeywordAnalyzer analyzer = new KeywordAnalyzer();
 					LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
 							.indexSearcher(targetPath, analyzer);
