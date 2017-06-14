@@ -57,4 +57,36 @@ public class Strings {
 		int firstTokenPosition = source.indexOf(firstToken);
 		return source.substring(0, firstTokenPosition);
 	}
+	
+	/**
+	* @MethodName: fillPreAndPostTagOnTargetString
+	* @Description: the method fillPreAndPostTagOnTargetString
+	* @param preTag
+	* @param postTag
+	* @param target
+	* @param source
+	* @return String
+	*/
+	public static String fillPreAndPostTagOnTargetString(String preTag,
+			String postTag, String target, String source) {
+		StringBuilder sb = new StringBuilder();
+		int preTagIndex;
+		int postTagIndex;
+		while(source.length() > 0) {
+			preTagIndex = source.indexOf(target);
+			if (preTagIndex == -1) {
+				break;
+			}
+			postTagIndex = target.length() + preTagIndex;
+			sb.append(source.substring(0, preTagIndex))
+			  .append(preTag)
+			  .append(source.substring(preTagIndex, postTagIndex))
+			  .append(postTag);
+			source = source.substring(postTagIndex);
+		}
+		if (source.length() > 0) {
+			sb.append(source);
+		}
+		return sb.toString();
+	}
 }
