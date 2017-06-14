@@ -36,6 +36,7 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.NumericRangeQuery;
 
@@ -192,6 +193,9 @@ public class LuceneAppender extends AbstractAppender {
 				value = value.trim();
 				String type = field.getType();
 				DocumentUtils.addFieldByType(doc, type, name, value);
+				if (DlcConstants.DLC_TIME.equals(name)) {
+					doc.add(new NumericDocValuesField(name, Long.valueOf(value)));
+				}
 			}
 		} catch (UnknownHostException e) {
 			LOGGER.warn("<<<=== Do not get the node hostIp ===>>>");
