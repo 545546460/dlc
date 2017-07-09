@@ -14,11 +14,15 @@
 package com.happgo.dlc.base;
 
 import javax.cache.CacheException;
+import javax.cache.expiry.CreatedExpiryPolicy;
+import javax.cache.expiry.Duration;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteClientDisconnectedException;
 import org.apache.ignite.cache.CacheAtomicityMode;
+import org.apache.ignite.cache.eviction.fifo.FifoEvictionPolicy;
+import org.apache.ignite.cache.eviction.lru.LruEvictionPolicy;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 
@@ -37,7 +41,7 @@ public class DlcLogIgniteCache<K, V> {
 	private Ignite ignite;
 	
 	/**
-	 * IgniteCache<?,?> the igniteCache 
+	 * IgniteCache<K,V> the igniteCache 
 	 */
 	private IgniteCache<K, V> igniteCache;
 	
@@ -50,6 +54,10 @@ public class DlcLogIgniteCache<K, V> {
 		CacheConfiguration cfg = new CacheConfiguration(cacheName);
 		cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
 		cfg.setBackups(1);
+        // 堆内缓存最近最少使用删除策略，参数1000表示堆内最多存储1000条记录
+		cfg.setEvictionPolicy(new LruEvictionPolicy(1000));
+        // 设置缓存过期时间
+		cfg.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
 		this.ignite = ignite;
 		this.igniteCache = ignite.getOrCreateCache(cfg);
 	}
