@@ -12,6 +12,7 @@
 * @version 1.0.0 
 */
 package com.happgo.dlc.base;
+
 import javax.cache.CacheException;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
@@ -23,10 +24,6 @@ import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.eviction.fifo.FifoEvictionPolicy;
 import org.apache.ignite.cache.eviction.lru.LruEvictionPolicy;
 import org.apache.ignite.configuration.CacheConfiguration;
-import org.apache.ignite.configuration.DataPageEvictionMode;
-import org.apache.ignite.configuration.IgniteConfiguration;
-import org.apache.ignite.configuration.MemoryConfiguration;
-import org.apache.ignite.configuration.MemoryPolicyConfiguration;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 
 /**
@@ -55,32 +52,15 @@ public class DlcLogIgniteCache<K, V> {
 	 * @param cacheName
 	 */
 	public DlcLogIgniteCache(Ignite ignite, String cacheName) {
-		// 堆外缓存参数配置
-		MemoryPolicyConfiguration memPlc = new MemoryPolicyConfiguration();
-		memPlc.setName("10M_offheap_memory");
-		// 堆外缓存最小必须10M
-		memPlc.setInitialSize(10 * 1024 * 1024);
-		memPlc.setMaxSize(10 * 1024 * 1024);
-		// 堆外缓存最久未被访问删除策略
-		memPlc.setPageEvictionMode(DataPageEvictionMode.RANDOM_LRU);
-		MemoryConfiguration memCfg = new MemoryConfiguration();
-		memCfg.setMemoryPolicies(memPlc);
-		IgniteConfiguration igniteCfg = ignite.configuration();
-		igniteCfg.setMemoryConfiguration(memCfg);
-
-		CacheConfiguration cacheCfg = new CacheConfiguration(cacheName);
-		cacheCfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
-		// 使用堆外缓存
-		cacheCfg.setMemoryPolicyName("10M_offheap_memory");
-		// 堆内缓存是否开启
-		cacheCfg.setOnheapCacheEnabled(false);
-		cacheCfg.setBackups(1);
-		// 堆内缓存最近最少使用删除策略，参数1000表示堆内最多存储1000条记录
-		// cacheCfg.setEvictionPolicy(new LruEvictionPolicy(1000));
-		// 设置缓存过期时间
-		cacheCfg.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
+		CacheConfiguration cfg = new CacheConfiguration(cacheName);
+		cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
+		cfg.setBackups(1);
+        // 堆内缓存最近最少使用删除策略，参数1000表示堆内最多存储1000条记录
+		cfg.setEvictionPolicy(new LruEvictionPolicy(1000));
+        // 设置缓存过期时间
+		cfg.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
 		this.ignite = ignite;
-		this.igniteCache = ignite.getOrCreateCache(cacheCfg);
+        this.igniteCache = ignite.getOrCreateCache(cfg);
 	}
 	
 	/**
