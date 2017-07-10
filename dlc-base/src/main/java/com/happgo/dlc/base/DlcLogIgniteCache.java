@@ -12,7 +12,6 @@
 * @version 1.0.0 
 */
 package com.happgo.dlc.base;
-
 import javax.cache.CacheException;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
@@ -24,6 +23,10 @@ import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.eviction.fifo.FifoEvictionPolicy;
 import org.apache.ignite.cache.eviction.lru.LruEvictionPolicy;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.configuration.DataPageEvictionMode;
+import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.configuration.MemoryConfiguration;
+import org.apache.ignite.configuration.MemoryPolicyConfiguration;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 
 /**
