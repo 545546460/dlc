@@ -65,15 +65,15 @@ public class DlcLogIgniteCache<K, V> {
 		IgniteConfiguration igniteCfg = ignite.configuration();
 		igniteCfg.setMemoryConfiguration(memCfg);
 
-			CacheConfiguration cacheCfg = new CacheConfiguration(cacheName);
-			cacheCfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
+		CacheConfiguration cacheCfg = new CacheConfiguration(cacheName);
+		cacheCfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
 		// 使用堆外缓存
 		cacheCfg.setMemoryPolicyName("10M_offheap_memory");
 		// 堆内缓存是否开启
 		cacheCfg.setOnheapCacheEnabled(false);
-			cacheCfg.setBackups(1);
+		cacheCfg.setBackups(1);
 		// 堆内缓存最近最少使用删除策略，参数1000表示堆内最多存储1000条记录
-		//		cacheCfg.setEvictionPolicy(new LruEvictionPolicy(1000));
+		// cacheCfg.setEvictionPolicy(new LruEvictionPolicy(1000));
 		// 设置缓存过期时间
 		cacheCfg.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
 		this.ignite = ignite;
