@@ -13,15 +13,12 @@
  */
 package com.happygo.dlc.log;
 
-import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Calendar;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
+import com.happgo.dlc.base.DLCException;
+import com.happgo.dlc.base.DlcConstants;
+import com.happgo.dlc.base.util.Assert;
+import com.happgo.dlc.base.util.Strings;
+import com.happygo.dlc.lucene.DocumentUtils;
+import com.happygo.dlc.lucene.LuceneIndexWriter;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -33,18 +30,17 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.NumericDocValuesField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.search.NumericRangeQuery;
 
-import com.happgo.dlc.base.DlcConstants;
-import com.happgo.dlc.base.util.Assert;
-import com.happgo.dlc.base.util.Strings;
-import com.happygo.dlc.lucene.DocumentUtils;
-import com.happygo.dlc.lucene.LuceneIndexWriter;
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Calendar;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ClassName:LuceneAppender
@@ -120,6 +116,10 @@ public class LuceneAppender extends AbstractAppender {
 	* @return LuceneIndexWriter
 	*/
 	private LuceneIndexWriter initLuceneIndexWriter() {
+		int writerSize = writerMap.size();
+		if (writerSize != 0) {
+			throw new DLCException("lucene index store path must be only one!");
+		}
 		if (null == writerMap.get(target)) {
 			writerMap.putIfAbsent(target, LuceneIndexWriter.indexWriter(
 					new KeywordAnalyzer(), this.target));

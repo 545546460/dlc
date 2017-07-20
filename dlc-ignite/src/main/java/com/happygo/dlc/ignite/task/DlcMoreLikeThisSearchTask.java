@@ -1,27 +1,25 @@
 /**
  * Copyright  2017
- * 
+ * <p>
  * All  right  reserved.
- *
+ * <p>
  * Created  on  2017年6月13日 下午7:35:14
  *
- * @Package com.happygo.dlc.lucene  
+ * @Package com.happygo.dlc.lucene
  * @Title: DlcMoreLikeThisSearchTask.java
  * @Description: DlcMoreLikeThisSearchTask.java
- * @author sxp (1378127237@qq.com) 
- * @version 1.0.0 
+ * @author sxp (1378127237@qq.com)
+ * @version 1.0.0
  */
 package com.happygo.dlc.ignite.task;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.happgo.dlc.base.DlcConstants;
+import com.happgo.dlc.base.bean.DlcLog;
+import com.happgo.dlc.base.util.CollectionUtils;
+import com.happgo.dlc.base.util.Strings;
+import com.happygo.dlc.log.LuceneAppender;
+import com.happygo.dlc.lucene.LuceneIndexSearcher;
+import com.happygo.dlc.lucene.LuceneIndexWriter;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.cluster.ClusterNode;
@@ -36,249 +34,184 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
 
-import com.happgo.dlc.base.DlcConstants;
-import com.happgo.dlc.base.bean.DlcLog;
-import com.happgo.dlc.base.util.CollectionUtils;
-import com.happgo.dlc.base.util.Strings;
-import com.happygo.dlc.ignite.callback.DlcMoreLikeThisCallback;
-import com.happygo.dlc.log.LuceneAppender;
-import com.happygo.dlc.lucene.LuceneIndexSearcher;
-import com.happygo.dlc.lucene.LuceneIndexWriter;
+import java.util.*;
 
 /**
  * ClassName:DlcMoreLikeThisSearchTask
- * 
- * @Description: MoreLikeThisSearchTask.java
+ *
  * @author sxp (1378127237@qq.com)
- * @date:2017年6月13日 下午7:35:14
+ * @Description: MoreLikeThisSearchTask.java
+ * @date:2017年6月13日 下午7 :35:14
  */
 public class DlcMoreLikeThisSearchTask extends
-		ComputeTaskAdapter<String, List<DlcLog>> {
+        ComputeTaskAdapter<String, List<DlcLog>> {
 
-	/**
-	 * long the serialVersionUID
-	 */
-	private static final long serialVersionUID = 6134653436779567038L;
+    /**
+     * long the serialVersionUID
+     */
+    private static final long serialVersionUID = 6134653436779567038L;
 
-	/**
-	 * The field LOGEER
-	 */
-	private static final Logger LOGEER = LogManager.getLogger(DlcMoreLikeThisSearchTask.class);
+    /**
+     * The field LOGEER
+     */
+    private static final Logger LOGEER = LogManager.getLogger(DlcMoreLikeThisSearchTask.class);
 
-	/**
-	 * Ignite the ignite
-	 */
-	@IgniteInstanceResource
-	private Ignite ignite;
+    /**
+     * Ignite the ignite
+     */
+    @IgniteInstanceResource
+    private Ignite ignite;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.apache.ignite.compute.ComputeTask#map(java.util.List,
-	 * java.lang.Object)
-	 */
-	@Override
-	public Map<? extends ComputeJob, ClusterNode> map(
-			List<ClusterNode> subgrid, final String keyWord)
-			throws IgniteException {
-		Map<ComputeJob, ClusterNode> map = new HashMap<>();
-		Iterator<ClusterNode> it = subgrid.iterator();
-		Map<String, LuceneIndexWriter> writeMap = LuceneAppender.writerMap;
-		for (Map.Entry<String, LuceneIndexWriter> entry : writeMap.entrySet()) {
-			if (!it.hasNext()) {
-				it = subgrid.iterator();
-			}
-			final String targetPath = entry.getKey();
-			ClusterNode node = it.next();
-			map.put(new ComputeJobAdapter() {
-				/**
-				 * The field serialVersionUID
-				 */
-				private static final long serialVersionUID = 8846404467071310921L;
+    /**
+     * Map map.
+     *
+     * @param subgrid the subgrid
+     * @param keyWord the key word
+     * @return the map
+     * @throws IgniteException the ignite exception
+     */
+    @Override
+    public Map<? extends ComputeJob, ClusterNode> map(
+            List<ClusterNode> subgrid, final String keyWord)
+            throws IgniteException {
+        Map<ComputeJob, ClusterNode> map = new HashMap<>();
+        Map<String, LuceneIndexWriter> writeMap = LuceneAppender.writerMap;
+        Map.Entry<String, LuceneIndexWriter> entry = CollectionUtils.getFirstEntry(writeMap);
+        final String targetPath = entry.getKey();
+        if (LOGEER.isDebugEnabled()) {
+            LOGEER.debug(">>> Search keyWord '" + keyWord
+                    + "' on this node from target path '" + targetPath
+                    + "'");
+        }
 
-				@Override
-				public Object execute() {
-					if (LOGEER.isDebugEnabled()) {
-						LOGEER.debug(">>> Search keyWord '" + keyWord
-								+ "' on this node from target path '" + targetPath
-								+ "'");
-					}
-					KeywordAnalyzer analyzer = new KeywordAnalyzer();
-					LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
-							.indexSearcher(targetPath, analyzer);
-					ScoreDoc[] scoreDocs = indexSearcher.matchAllDocsSearch();
-					Collection<List<DlcLog>> logQueryResults = ignite.compute()
-							.broadcast(
-									new DlcMoreLikeThisCallback(scoreDocs,
-											targetPath + DlcConstants.SYMBOL_AT + keyWord));
-					List<DlcLog> logQueryDlcLogs = new ArrayList<DlcLog>();
-					for (Iterator<List<DlcLog>> it = logQueryResults.iterator(); it
-							.hasNext();) {
-						logQueryDlcLogs.addAll(it.next());
-					}
-					return logQueryDlcLogs;
-				}
-			}, node);
-		}
-		return map;
-	}
+        KeywordAnalyzer analyzer = new KeywordAnalyzer();
+        LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
+                .indexSearcher(targetPath, analyzer);
+        ScoreDoc[] scoreDocs = indexSearcher.matchAllDocsSearch();
+        if ((scoreDocs == null) || (scoreDocs.length == 0)) {
+            return null;
+        }
+        List<Document> documents = new ArrayList<Document>(scoreDocs.length);
+        Document document = null;
+        for (final ScoreDoc scoreDoc : scoreDocs) {
+            document = indexSearcher.hitDocument(scoreDoc);
+            documents.add(document);
+        }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.apache.ignite.compute.ComputeTask#reduce(java.util.List)
-	 */
-	@Override
-	public List<DlcLog> reduce(List<ComputeJobResult> results)
-			throws IgniteException {
-		List<DlcLog> dlcLogs = new ArrayList<DlcLog>();
-		if (results == null || results.isEmpty()) {
-			return null;
-		}
-		for (final ComputeJobResult res : results) {
-			List<DlcLog> dataList = res.<List<DlcLog>> getData();
-			if (dataList == null || dataList.isEmpty()) {
-				continue;
-			}
-			dlcLogs.addAll(dataList);
-		}
-		return dlcLogs;
-	}
+        int docPageSize = 10000;
+        List<List<Document>> splitDocList = CollectionUtils.split(documents, docPageSize);
+        Iterator<ClusterNode> it = subgrid.iterator();
+        for (final List<Document> subDocList : splitDocList) {
+            if (!it.hasNext()) {
+                it = subgrid.iterator();
+            }
+            ClusterNode node = it.next();
+            map.put(new DlcMoreLikeThisComputeJobAdapter(keyWord, targetPath, subDocList), node);
+        }
+        return map;
+    }
 
-	/**
-	 * ClassName:DlcMoreLikeThisComputeJob
-	 * 
-	 * @Description: DlcMoreLikeThisComputeJob.java
-	 * @author sxp (1378127237@qq.com)
-	 * @date:2017年6月13日 下午9:04:41
-	 */
-	public static class DlcMoreLikeThisComputeJob extends
-			ComputeTaskAdapter<Map<String, ScoreDoc[]>, List<DlcLog>> {
+    /**
+     * Reduce list.
+     *
+     * @param results the results
+     * @return the list
+     * @throws IgniteException the ignite exception
+     */
+    @Override
+    public List<DlcLog> reduce(List<ComputeJobResult> results)
+            throws IgniteException {
+        if (results == null || results.isEmpty()) {
+            return null;
+        }
+        List<DlcLog> dlcLogs = new ArrayList<DlcLog>();
+        List<DlcLog> dataList = null;
+        for (final ComputeJobResult res : results) {
+            dataList = res.<List<DlcLog>>getData();
+            dlcLogs.addAll(dataList);
+        }
+        return dlcLogs;
+    }
 
-		/**
-		 * long the serialVersionUID
-		 */
-		private static final long serialVersionUID = 5081026869134294235L;
-		
-		/**
-		 * The field LOGEER
-		 */
-		private static final Logger LOGEER = LogManager.getLogger(DlcMoreLikeThisComputeJob.class);
+    /**
+     * The type Dlc more like this compute job adapter.
+     */
+    static class DlcMoreLikeThisComputeJobAdapter extends ComputeJobAdapter {
+        /**
+         * The Key word.
+         */
+        private String keyWord;
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.apache.ignite.compute.ComputeTask#map(java.util.List,
-		 * java.lang.Object)
-		 */
-		@Override
-		public Map<? extends ComputeJob, ClusterNode> map(
-				List<ClusterNode> subgrid,
-				Map<String, ScoreDoc[]> targetPathAndScoreDocsMap)
-				throws IgniteException {
-			Map<ComputeJob, ClusterNode> map = new HashMap<>();
-			Iterator<ClusterNode> it = subgrid.iterator();
-			final Entry<String, ScoreDoc[]> firstEntry = CollectionUtils
-					.getFirstEntry(targetPathAndScoreDocsMap);
-			List<ScoreDoc> scoreDocsList = Arrays.asList(firstEntry.getValue());
-			int scoreDocPageSize = 10000;
-			int modScoreDoc = scoreDocsList.size() % scoreDocPageSize;
-			int scoreDocPage = (modScoreDoc == 0) ? scoreDocsList.size()
-					/ scoreDocPageSize
-					: (scoreDocsList.size() / scoreDocPageSize) + 1;
-			for (int scoreDocNum = 0; scoreDocNum < scoreDocPage; scoreDocNum++) {
-				if (!it.hasNext()) {
-					it = subgrid.iterator();
-				}
-				ClusterNode node = it.next();
-				final List<ScoreDoc> subScoreDocList = scoreDocsList.subList(
-						scoreDocNum * scoreDocPageSize, (scoreDocNum + 1)
-								* scoreDocPageSize > scoreDocsList.size() ? scoreDocsList.size() : (scoreDocNum + 1)
-										* scoreDocPageSize);
-				map.put(new ComputeJobAdapter() {
-					/**
-					 * The field serialVersionUID
-					 */
-					private static final long serialVersionUID = 8846404467071310921L;
+        /**
+         * The Target path.
+         */
+        private String targetPath;
 
-					@Override
-					public Object execute() {
-						String[] splitStrArray = firstEntry.getKey().split(DlcConstants.SYMBOL_AT);
-						String targetPath = splitStrArray[0];
-						String keyWord = splitStrArray[1];
-						if (LOGEER.isDebugEnabled()) {
-							LOGEER.debug(">>> Filter keyWord '" + keyWord
-									+ "' on this node from target path '" + targetPath
-									+ "'");
-						}
-						KeywordAnalyzer analyzer = new KeywordAnalyzer();
-						LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
-								.indexSearcher(targetPath, analyzer);
-						return filterScoreDocsAndBuildDlcLogs(subScoreDocList,
-								indexSearcher, keyWord);
-					}
-				}, node);
-			}
-			return map;
-		}
+        /**
+         * The Sub doc list.
+         */
+        private List<Document> subDocList;
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.apache.ignite.compute.ComputeTask#reduce(java.util.List)
-		 */
-		@Override
-		public List<DlcLog> reduce(List<ComputeJobResult> results)
-				throws IgniteException {
-			List<DlcLog> dlcLogs = new ArrayList<DlcLog>();
-			if (results == null || results.isEmpty()) {
-				return null;
-			}
-			for (final ComputeJobResult res : results) {
-				List<DlcLog> dataList = res.<List<DlcLog>> getData();
-				if (dataList == null || dataList.isEmpty()) {
-					continue;
-				}
-				dlcLogs.addAll(dataList);
-			}
-			return dlcLogs;
-		}
+        /**
+         * Instantiates a new Dlc more like this compute job adapter.
+         *
+         * @param keyWord    the key word
+         * @param targetPath the target path
+         * @param subDocList the sub doc list
+         */
+        public DlcMoreLikeThisComputeJobAdapter(String keyWord, String targetPath, List<Document> subDocList) {
+            this.keyWord = keyWord;
+            this.targetPath = targetPath;
+            this.subDocList = subDocList;
+        }
 
-		/**
-		 * @MethodName: filterScoreDocsAndBuildDlcLogs
-		 * @Description: the filterScoreDocsAndBuildDlcLogs
-		 * @param subScoreDocList
-		 * @param iSearcher
-		 * @param keyWord
-		 * @return List<DlcLog>
-		 */
-		private List<DlcLog> filterScoreDocsAndBuildDlcLogs(
-				List<ScoreDoc> subScoreDocList, LuceneIndexSearcher iSearcher,
-				String keyWord) {
-			if (subScoreDocList == null || subScoreDocList.size() == 0) {
-				return null;
-			}
-			List<DlcLog> dlcLogs = new ArrayList<>();
-			DlcLog dlcLog = null;
-			Document doc = null;
-			for (final ScoreDoc scoreDoc : subScoreDocList) {
-				doc = iSearcher.hitDocument(scoreDoc);
-				String content = doc.get(DlcConstants.DLC_CONTENT);
-				if (content.contains(keyWord)) {
-					content = Strings.fillPreAndPostTagOnTargetString(DlcConstants.DLC_HIGHLIGHT_PRE_TAG, 
-							DlcConstants.DLC_HIGHLIGHT_POST_TAG, keyWord, content);
-					String level = doc.get(DlcConstants.DLC_LEVEL);
-					long time = (doc.getField(DlcConstants.DLC_TIME)) == null ? 0
-							: (Long) doc.getField(DlcConstants.DLC_TIME)
-									.numericValue();
-					String hostIp = doc.get(DlcConstants.DLC_HOST_IP);
-					String systemName = doc.get(DlcConstants.SYSTEM_NAME);
-					dlcLog = new DlcLog(content, level, time, hostIp,
-							systemName);
-					dlcLogs.add(dlcLog);
-				}
-			}
-			return dlcLogs;
-		}
-	}
+        /**
+         * Execute object.
+         *
+         * @return the object
+         * @throws IgniteException the ignite exception
+         */
+        @Override
+        public Object execute() throws IgniteException {
+            if (LOGEER.isDebugEnabled()) {
+                LOGEER.debug(">>> Filter keyWord '" + keyWord
+                        + "' on this node from target path '" + targetPath
+                        + "'");
+            }
+            return filterDocsAndBuildDlcLogs(subDocList, keyWord);
+        }
+
+        /**
+         * Filter docs and build dlc logs list.
+         *
+         * @param subDocList the sub doc list
+         * @param keyWord    the key word
+         * @return the list
+         */
+        private List<DlcLog> filterDocsAndBuildDlcLogs(
+                List<Document> subDocList, String keyWord) {
+            if ((subDocList == null) || (subDocList.size() == 0)) {
+                return null;
+            }
+            List<DlcLog> dlcLogs = new ArrayList<>();
+            DlcLog dlcLog = null;
+            for (final Document doc : subDocList) {
+                String content = doc.get(DlcConstants.DLC_CONTENT);
+                if (content.contains(keyWord)) {
+                    content = Strings.fillPreAndPostTagOnTargetString(DlcConstants.DLC_HIGHLIGHT_PRE_TAG,
+                            DlcConstants.DLC_HIGHLIGHT_POST_TAG, keyWord, content);
+                    String level = doc.get(DlcConstants.DLC_LEVEL);
+                    long time = (doc.getField(DlcConstants.DLC_TIME)) == null ? 0
+                            : (Long) doc.getField(DlcConstants.DLC_TIME)
+                            .numericValue();
+                    String hostIp = doc.get(DlcConstants.DLC_HOST_IP);
+                    String systemName = doc.get(DlcConstants.SYSTEM_NAME);
+                    dlcLog = new DlcLog(content, level, time, hostIp,
+                            systemName);
+                    dlcLogs.add(dlcLog);
+                }
+            }
+            return dlcLogs;
+        }
+    }
 }

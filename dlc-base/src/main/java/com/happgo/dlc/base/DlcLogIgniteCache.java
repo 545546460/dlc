@@ -13,6 +13,8 @@
 */
 package com.happgo.dlc.base;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.cache.CacheException;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
@@ -50,15 +52,17 @@ public class DlcLogIgniteCache<K, V> {
 	 * 描述：该构造函数默认为堆外缓存
 	 * @param ignite
 	 * @param cacheName
+	 * @param duration
 	 */
-	public DlcLogIgniteCache(Ignite ignite, String cacheName) {
+	public DlcLogIgniteCache(Ignite ignite, String cacheName, int duration) {
 		CacheConfiguration cfg = new CacheConfiguration(cacheName);
 		cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
 		cfg.setBackups(1);
         // 堆内缓存最近最少使用删除策略，参数1000表示堆内最多存储1000条记录
 		cfg.setEvictionPolicy(new LruEvictionPolicy(1000));
         // 设置缓存过期时间
-		cfg.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
+		cfg.setExpiryPolicyFactory(CreatedExpiryPolicy
+				.factoryOf(new Duration(TimeUnit.MINUTES, duration)));
 		this.ignite = ignite;
         this.igniteCache = ignite.getOrCreateCache(cfg);
 	}
