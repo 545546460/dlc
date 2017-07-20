@@ -138,6 +138,11 @@ public class DlcMoreLikeThisSearchTask extends
      */
     static class DlcMoreLikeThisComputeJobAdapter extends ComputeJobAdapter {
         /**
+		 * long the serialVersionUID 
+		 */
+		private static final long serialVersionUID = 5723998750428737605L;
+
+		/**
          * The Key word.
          */
         private String keyWord;
