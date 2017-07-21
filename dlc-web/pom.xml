@@ -3,20 +3,63 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.happygo.dlc</groupId>
-	<artifactId>dlc-base</artifactId>
+	<artifactId>dlc-web</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.2.RELEASE</version>
+		<relativePath />
+	</parent>
+
 	<modules>
-		<module>dlc-web</module>
-		<module>dlc-core</module>
-		<module>dlc-common</module>
+		<module>dlc-web-api</module>
+		<module>dlc-web-common</module>
+		<module>dlc-web-biz</module>
+		<module>dlc-web-dal</module>
 	</modules>
 
 	<properties>
 		<java.version>1.7</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
+	<developers>
+		<developer>
+			<id>sxp</id>
+			<name>sxp</name>
+			<email>sxp@travelsky.com</email>
+		</developer>
+	</developers>
+
+	<dependencies>
+		<!-- spring-boot-starter -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-freemarker</artifactId>
+		</dependency>
+		<!-- spring-boot-starter end -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.191</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<!-- 编译插件 -->

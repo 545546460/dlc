@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+    <title>DLC 分布式日志搜集系统 - 登录</title>
+    <link rel="shortcut icon" href="/static/favicon.ico"> 
+    <link href="/css/bootstrap.min.css?v=3.3.5" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+
+    <link href="/css/animate.min.css" rel="stylesheet">
+    <link href="/css/style.min.css?v=4.0.0" rel="stylesheet"><base target="_self">
+</head>
+
+<body class="gray-bg">
+
+    <div class="middle-box text-center loginscreen  animated fadeInDown">
+        <div>
+            <div>
+
+                <h1 class="logo-name">DLC</h1>
+
+            </div>
+            <h3>欢迎使用 DLC</h3>
+
+            <form id="loginForm" class="m-t" method="post" action="/dlc/login">
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="用户名" name="account" required="">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="密码" name="pwd" required="">
+                </div>
+                <button id="loginBtn" type="submit" class="btn btn-primary block full-width m-b">登 录</button>
+            </form>
+        </div>
+    </div>
+    <script src="/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/js/bootstrap.min.js?v=3.3.5"></script>
+</body>
+
+</html>
