@@ -32,13 +32,14 @@ Distributed Log Collected——分布式日志搜集系统（DLC）
 
 ## 5. dlc客户端
 ### 5.1 搜索首页
-![](./docs/images/search index.PNG)
+![](./docs/images/search_index.PNG)
 
 ### 5.2 搜索结果
 ![](./docs/images/result.PNG)
 
 ## 6.文档 ## demo
 在线文档:https://xiapshen.github.io/dlc/Distributed Log Collected用户指南
+
 demo:https://github.com/xiapshen/dlc/tree/master/exmple/dlc-example
 
-## FAQ
+## 7.FAQ
