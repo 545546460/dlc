@@ -12,8 +12,8 @@ jdk:
   
 jobs:
   include:
-    - stage: install
-      script: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+    - stage: package
+      script: mvn package -DskipTests=true
   
 cache:
   directories:
