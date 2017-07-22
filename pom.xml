@@ -3,14 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.happygo.dlc</groupId>
-	<artifactId>dlc-core</artifactId>
+	<artifactId>dlc-base</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>dlc-ignite</module>
-		<module>dlc-lucene</module>
-		<module>dlc-log</module>
-		<module>dlc-base</module>
+		<module>dlc-web</module>
+		<module>dlc-core</module>
+		<module>dlc-common</module>
 	</modules>
 
 	<properties>
