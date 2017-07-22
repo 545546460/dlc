@@ -30,6 +30,7 @@ import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 
 /**
  * ClassName:DlcLogIgniteCache
+ * @deprecated
  * @Description: DlcLogIgniteCache.java
  * @author sxp (1378127237@qq.com) 
  * @date:2017年7月8日 下午2:57:24
@@ -49,7 +50,7 @@ public class DlcLogIgniteCache<K, V> {
 	
 	/**
 	 * Constructor com.happygo.dlc.ignite.cache.DlcLogIgniteCache
-	 * 描述：该构造函数默认为堆外缓存
+	 * 描述：该构造函数默认为堆内缓存
 	 * @param ignite
 	 * @param cacheName
 	 * @param duration
