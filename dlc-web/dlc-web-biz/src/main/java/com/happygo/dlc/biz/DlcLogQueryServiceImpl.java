@@ -135,17 +135,10 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 			return null;
 		}
 		List<List<DlcLog>> splitLogQueryDlcLogs = CollectionUtils.split(logQueryDlcLogs, partitionSize);
-		Lock lock = igniteCache.lock(keyWord);
-		lock.lock();
-		try {
-			boolean isSuccess = igniteCache.replace(keyWord, splitLogQueryDlcLogs);
-			if (!isSuccess) {
-				igniteCache.put(keyWord, splitLogQueryDlcLogs);
-			}
+		boolean isSuccess = igniteCache.replace(keyWord, splitLogQueryDlcLogs);
+		if (!isSuccess) {
+			igniteCache.put(keyWord, splitLogQueryDlcLogs);
 		}
-		finally {
-		    lock.unlock();
-		} 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("keyword[" + keyWord + "] dlc log put ignite cache");
 		}
