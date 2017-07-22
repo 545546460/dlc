@@ -117,14 +117,14 @@ public class LuceneAppender extends AbstractAppender {
 	*/
 	private LuceneIndexWriter initLuceneIndexWriter() {
 		int writerSize = writerMap.size();
-		if (writerSize != 0) {
-			throw new DLCException("lucene index store path must be only one!");
+		if ((writerSize == 0) || (writerSize == 1)) {
+			if (null == writerMap.get(target)) {
+				writerMap.putIfAbsent(target, LuceneIndexWriter.indexWriter(
+						new KeywordAnalyzer(), this.target));
+			}
+			return writerMap.get(target);
 		}
-		if (null == writerMap.get(target)) {
-			writerMap.putIfAbsent(target, LuceneIndexWriter.indexWriter(
-					new KeywordAnalyzer(), this.target));
-		}
-		return writerMap.get(target);
+		throw new DLCException("lucene index store path must be only one!");
 	}
 	
 	/**

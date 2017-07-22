@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.4.RELEASE</version>
+		<version>1.5.2.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -54,11 +54,11 @@
 			<version>${log4j.version}</version>
 		</dependency>
 
-		<!--dlc-ignite-->
+		<!--dlc-core-->
 		<dependency>
 			<groupId>com.happygo.dlc</groupId>
-			<artifactId>dlc-ignite</artifactId>
-			<version>1.0.0</version>
+			<artifactId>dlc-core</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 
 		<!-- 如果项目中使用的h2为其他版本，ignite无法启动，修改h2 jar为1.4.191版本-->

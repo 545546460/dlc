@@ -99,7 +99,7 @@ public class DlcMoreLikeThisSearchTask extends
             documents.add(document);
         }
 
-        int docPageSize = 10000;
+        int docPageSize = 50;
         List<List<Document>> splitDocList = CollectionUtils.split(documents, docPageSize);
         Iterator<ClusterNode> it = subgrid.iterator();
         for (final List<Document> subDocList : splitDocList) {

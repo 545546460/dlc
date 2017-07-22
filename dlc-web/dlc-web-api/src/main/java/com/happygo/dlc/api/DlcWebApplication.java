@@ -54,7 +54,7 @@ public class DlcWebApplication extends SpringBootServletInitializer {
 	/**
 	* @MethodName: defaultView
 	* @Description: the method defaultView
-	* @return DefaultView
+	* @return DefaultViewCacheConfiguration
 	*/
 	@Bean
 	public DefaultView defaultView() {
