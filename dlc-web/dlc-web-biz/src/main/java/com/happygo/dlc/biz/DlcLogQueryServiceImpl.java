@@ -17,21 +17,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.happgo.dlc.base.DlcConstants;
-import com.happgo.dlc.base.DlcLogIgniteCache;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.bean.PageParam;
 import com.happgo.dlc.base.util.CollectionUtils;
-import com.happygo.dlc.biz.config.SystemConfig;
 import com.happygo.dlc.biz.service.DlcLogQueryService;
 import com.happygo.dlc.dal.access.DlcLogQueryCallback;
 
@@ -56,20 +56,19 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 	private Ignite ignite;
 	
 	/**
-	 * SystemConfig the systemConfig 
+	 * IgniteCache<String,List<List<DlcLog>>> the igniteCache 
 	 */
-	@Autowired
-	private SystemConfig systemConfig;
-	
-	/**
-	 * DlcLogIgniteCache<String,List<DlcLog>> the igniteCache 
-	 */
-	private DlcLogIgniteCache<String, List<List<DlcLog>>> igniteCache;
+	private IgniteCache<String, List<List<DlcLog>>> igniteCache;
 
+	/**
+	* @MethodName: initIgniteCache
+	* @Description: the initIgniteCache
+	* @return void
+	*/
 	@PostConstruct
 	public void initIgniteCache() {
-		int duration = systemConfig.getCacheDuration();
-		igniteCache = new DlcLogIgniteCache<>(ignite, "dlcLogCache", duration);
+		String cacheName = "dlcLogCache";
+		igniteCache = ignite.getOrCreateCache(cacheName);
 	}
 	
 	/* (non-Javadoc)
@@ -90,24 +89,14 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 		
 		//2.根据keyword关键字匹配，如果没有匹配到，继续第三步
 		List<DlcLog> logQueryDlcLogs = broadcastLogQuery(keyWord, null);
-		if (!logQueryDlcLogs.isEmpty()) {
-			splitLogQueryDlcLogs = CollectionUtils.split(logQueryDlcLogs, partitionSize);
-			igniteCache.put(keyWord, splitLogQueryDlcLogs);
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("keyword[" + keyWord + "] dlc log put ignite cache");
-			}
+		splitLogQueryDlcLogs = splitLogAndPutInCache(keyWord, partitionSize, logQueryDlcLogs);
+		if (!org.springframework.util.CollectionUtils.isEmpty(splitLogQueryDlcLogs)) {
 			return splitLogQueryDlcLogs;
 		}
 		
 		//3.根据keyword进行相似度查询
 		logQueryDlcLogs = broadcastLogQuery(keyWord, DlcConstants.DLC_MORE_LIKE_THIS_QUERY_MODE);
-		if (!logQueryDlcLogs.isEmpty()) {
-			splitLogQueryDlcLogs = CollectionUtils.split(logQueryDlcLogs, partitionSize);
-			igniteCache.put(keyWord, splitLogQueryDlcLogs);
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("keyword[" + keyWord + "] dlc log put ignite cache");
-			}
-		}
+		splitLogQueryDlcLogs = splitLogAndPutInCache(keyWord, partitionSize, logQueryDlcLogs);
 		return splitLogQueryDlcLogs;
 	}
 	
@@ -130,5 +119,36 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 			logQueryDlcLogs.addAll(it.next());
 		}
 		return logQueryDlcLogs;
+	}
+	
+	/**
+	* @MethodName: splitLogAndPutInCache
+	* @Description: the splitLogAndPutInCache
+	* @param keyWord
+	* @param partitionSize
+	* @param logQueryDlcLogs
+	* @return List<List<DlcLog>>
+	*/
+	private List<List<DlcLog>> splitLogAndPutInCache(String keyWord, int partitionSize, 
+			List<DlcLog> logQueryDlcLogs) {
+		if (logQueryDlcLogs.isEmpty()) {
+			return null;
+		}
+		List<List<DlcLog>> splitLogQueryDlcLogs = CollectionUtils.split(logQueryDlcLogs, partitionSize);
+		Lock lock = igniteCache.lock(keyWord);
+		lock.lock();
+		try {
+			boolean isSuccess = igniteCache.replace(keyWord, splitLogQueryDlcLogs);
+			if (!isSuccess) {
+				igniteCache.put(keyWord, splitLogQueryDlcLogs);
+			}
+		}
+		finally {
+		    lock.unlock();
+		} 
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("keyword[" + keyWord + "] dlc log put ignite cache");
+		}
+		return splitLogQueryDlcLogs;
 	}
 }
