@@ -38,7 +38,7 @@ Distributed Log Collected——分布式日志搜集系统（DLC）
 ![](./docs/images/result.PNG)
 
 ## 6.文档 ## demo
-在线文档:https://xiapshen.github.io/dlc/dlc用户指南
+在线文档:https://xiapshen.github.io/dlc/docs/dlc用户指南
 
 demo:https://github.com/xiapshen/dlc/tree/master/exmple/dlc-example
 
