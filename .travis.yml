@@ -14,9 +14,9 @@ jobs:
     - stage: compile
       script: mvn compile -DskipTests=true
   
-cache:
-  directories:
-    - $HOME/.m2
+#cache:
+#  directories:
+#    - $HOME/.m2
 
 branches:
   only:
