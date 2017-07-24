@@ -11,8 +11,8 @@ jdk:
   
 jobs:
   include:
-    - stage: package
-      script: mvn package -DskipTests=true
+    - stage: compile
+      script: mvn compile -DskipTests=true
   
 cache:
   directories:
