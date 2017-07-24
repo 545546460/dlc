@@ -1,23 +1,10 @@
 language: java
-before_install:
-  - wget http://apache.claz.org/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
-  - tar zxvf apache-maven-3.3.9-bin.tar.gz
-  - chmod +x apache-maven-3.3.9/bin/mvn
-  - export M2_HOME=$PWD/apache-maven-3.3.9
-  - export PATH=$PWD/apache-maven-3.3.9/bin:${PATH}
-
 jdk:
-    - oraclejdk7
-  
-jobs:
-  include:
-    - stage: compile
-      script: mvn compile -DskipTests=true
-  
-#cache:
-#  directories:
-#    - $HOME/.m2
-
+  - oraclejdk8
+before_install:
+  - pip install --user codecov
+after_success:
+  - codecov
 branches:
-  only:
-    - master
+  except:
+- appveyor
