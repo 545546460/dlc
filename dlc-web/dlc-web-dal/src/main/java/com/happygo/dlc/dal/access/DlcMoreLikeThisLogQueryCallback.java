@@ -46,6 +46,8 @@ public class DlcMoreLikeThisLogQueryCallback implements IgniteCallable<List<DlcL
 	 * String the keyWord 
 	 */
 	private String keyWord;
+
+	private String appName;
 	
 	/**
 	 * String the queryMode 
@@ -57,8 +59,9 @@ public class DlcMoreLikeThisLogQueryCallback implements IgniteCallable<List<DlcL
 	 * @param keyWord
 	 * @param queryMode
 	 */
-	public DlcMoreLikeThisLogQueryCallback(String keyWord, String queryMode) {
+	public DlcMoreLikeThisLogQueryCallback(String keyWord, String appName, String queryMode) {
 		this.keyWord = keyWord;
+		this.appName = appName;
 		this.queryMode = queryMode;
 	}
 
@@ -66,6 +69,6 @@ public class DlcMoreLikeThisLogQueryCallback implements IgniteCallable<List<DlcL
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	public List<DlcLog> call() throws Exception {
-		return dlcIgniteService.logQuery(keyWord, queryMode);
+		return dlcIgniteService.logQuery(keyWord, appName, queryMode);
 	}
 }
