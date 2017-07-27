@@ -33,6 +33,7 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.search.NumericRangeQuery;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -116,6 +117,9 @@ public class LuceneAppender extends AbstractAppender {
 	* @return LuceneIndexWriter
 	*/
 	private LuceneIndexWriter initLuceneIndexWriter() {
+		if(new File(target).isFile()) {
+			throw new DLCException("Lucene index path must be directory, but target path:'" + target + "' is file!");
+		}
 		int writerSize = writerMap.size();
 		if ((writerSize == 0) || (writerSize == 1)) {
 			if (null == writerMap.get(target)) {

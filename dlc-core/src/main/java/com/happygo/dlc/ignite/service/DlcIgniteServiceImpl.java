@@ -16,6 +16,7 @@ package com.happygo.dlc.ignite.service;
 import java.util.List;
 
 import org.apache.ignite.Ignite;
+import org.apache.ignite.cluster.ClusterGroup;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.services.Service;
 import org.apache.ignite.services.ServiceContext;
@@ -30,10 +31,10 @@ import com.happygo.dlc.ignite.task.DlcMoreLikeThisSearchTask;
 
 /**
  * ClassName:DlcIgniteServiceImpl
- * 
- * @Description: DlcIgniteServiceImpl.java
+ *
  * @author sxp (1378127237@qq.com)
- * @date:2017年6月1日 下午3:16:20
+ * @Description: DlcIgniteServiceImpl.java
+ * @date:2017年6月1日 下午3 :16:20
  */
 public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 
@@ -56,19 +57,23 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	/**
 	 * logQuery
 	 * @param keyWord
-	 * @see com.happygo.dlc.ignite.service.DlcIgniteService#logQuery(java.lang.String) 
 	 */
-	public List<DlcLog> logQuery(String keyWord, String queryMode) {
-		if (DlcConstants.DLC_MORE_LIKE_THIS_QUERY_MODE.equals(queryMode)) {
-			return ignite.compute().execute(DlcMoreLikeThisSearchTask.class, keyWord);
+	public List<DlcLog> logQuery(String keyWord, String appName, String queryMode) {
+		ClusterGroup workers = ignite.cluster().forAttribute("ROLE", appName);
+		if (workers == null) {
+			LOGEER.warn("Not find cluster nodes of appName:[" + appName + "]!");
+			return null;
 		}
-		return ignite.compute().execute(DlcKeywordSearchTask.class, keyWord);
+		if (DlcConstants.DLC_MORE_LIKE_THIS_QUERY_MODE.equals(queryMode)) {
+			return ignite.compute(workers).execute(DlcMoreLikeThisSearchTask.class, keyWord);
+		}
+		return ignite.compute(workers).execute(DlcKeywordSearchTask.class, keyWord);
 	}
 
 	/**
 	* cancel
-	* @param ctx 
-	* @see org.apache.ignite.services.Service#cancel(org.apache.ignite.services.ServiceContext) 
+	* @param ctx
+	* @see org.apache.ignite.services.Service#cancel(org.apache.ignite.services.ServiceContext)
 	*/
 	public void cancel(ServiceContext ctx) {
 		LOGEER.info("Service was cancel: " + ctx.name());
@@ -77,8 +82,8 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	/**
 	* init
 	* @param ctx
-	* @throws Exception 
-	* @see org.apache.ignite.services.Service#init(org.apache.ignite.services.ServiceContext) 
+	* @throws Exception
+	* @see org.apache.ignite.services.Service#init(org.apache.ignite.services.ServiceContext)
 	*/
 	public void init(ServiceContext ctx) throws Exception {
 		LOGEER.info("Service was initialized: " + ctx.name());
@@ -87,8 +92,8 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	/**
 	* execute
 	* @param ctx
-	* @throws Exception 
-	* @see org.apache.ignite.services.Service#execute(org.apache.ignite.services.ServiceContext) 
+	* @throws Exception
+	* @see org.apache.ignite.services.Service#execute(org.apache.ignite.services.ServiceContext)
 	*/
 	public void execute(ServiceContext ctx) throws Exception {
 		LOGEER.info("Executing distributed service: " + ctx.name());
