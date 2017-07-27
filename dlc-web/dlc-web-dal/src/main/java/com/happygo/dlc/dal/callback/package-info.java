@@ -5,7 +5,7 @@
  *
  * Created  on  2017年6月5日 上午10:43:01
  *
- * @Package com.happygo.dlc.dal.access  
+ * @Package com.happygo.dlc.dal.callback
  * @Title: package-info.java
  * @Description: package-info.java
  * @author sxp (1378127237@qq.com) 
@@ -18,4 +18,4 @@
  * @author sxp (1378127237@qq.com)
  * @date:2017年6月5日 上午10:43:01
  */
-package com.happygo.dlc.dal.access;
+package com.happygo.dlc.dal.callback;

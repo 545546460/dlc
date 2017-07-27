@@ -832,7 +832,7 @@
 			}
 
 			/*
-			 * Add reference to the group, so it`s possible to access from callbacks, example:
+			 * Add reference to the group, so it`s possible to callback from callbacks, example:
 			 * afterLoad : function() {
 			 *     this.title = 'Image ' + (this.index + 1) + ' of ' + this.group.length + (this.title ? ' - ' + this.title : '');
 			 * }

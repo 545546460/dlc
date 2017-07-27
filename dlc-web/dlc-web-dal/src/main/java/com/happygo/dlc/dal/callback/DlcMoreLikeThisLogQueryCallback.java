@@ -5,13 +5,13 @@
 *
 * Created  on  2017年6月13日 下午9:57:07
 *
-* @Package com.happygo.dlc.dal.access  
+* @Package com.happygo.dlc.dal.callback
 * @Title: DlcMoreLikeThisLogQueryCallback.java
 * @Description: DlcMoreLikeThisLogQueryCallback.java
 * @author sxp (1378127237@qq.com) 
 * @version 1.0.0 
 */
-package com.happygo.dlc.dal.access;
+package com.happygo.dlc.dal.callback;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class DlcMoreLikeThisLogQueryCallback implements IgniteCallable<List<DlcL
 	private String queryMode;
 	
 	/**
-	 * Constructor com.happygo.dlc.dal.access.DlcMoreLikeThisLogQueryCallback
+	 * Constructor com.happygo.dlc.dal.callback.DlcMoreLikeThisLogQueryCallback
 	 * @param keyWord
 	 * @param queryMode
 	 */

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 
 import javax.annotation.PostConstruct;
 
@@ -33,7 +32,7 @@ import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.bean.PageParam;
 import com.happgo.dlc.base.util.CollectionUtils;
 import com.happygo.dlc.biz.service.DlcLogQueryService;
-import com.happygo.dlc.dal.access.DlcLogQueryCallback;
+import com.happygo.dlc.dal.callback.DlcLogQueryCallback;
 
 /**
  * The type Dlc log query service.

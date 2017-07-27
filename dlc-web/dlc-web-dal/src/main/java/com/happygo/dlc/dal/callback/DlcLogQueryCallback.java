@@ -5,13 +5,13 @@
 *
 * Created  on  2017年6月4日 上午10:12:30
 *
-* @Package com.happygo.dlc.dal  
+* @Package com.happygo.dlc.dal.callback
 * @Title: DlcLogQueryCallback.java
 * @Description: DlcLogQueryCallback.java
 * @author sxp (1378127237@qq.com) 
 * @version 1.0.0 
 */
-package com.happygo.dlc.dal.access;
+package com.happygo.dlc.dal.callback;
 
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class DlcLogQueryCallback implements IgniteCallable<List<DlcLog>> {
 	private String queryMode;
 
 	/**
-	 * Constructor com.happygo.dlc.dal.access.DlcLogQueryCallback
+	 * Constructor com.happygo.dlc.dal.callback.DlcLogQueryCallback
 	 *
 	 * @param keyWord   the key word
 	 * @param appName   the app name
