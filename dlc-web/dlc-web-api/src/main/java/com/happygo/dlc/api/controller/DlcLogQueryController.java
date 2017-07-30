@@ -51,6 +51,9 @@ public class DlcLogQueryController {
 	@Autowired
 	private transient DlcLogQueryService dlcLogQueryService;
 
+	/**
+	 * LogSourceService the logSourceService 
+	 */
 	@Autowired
 	private transient LogSourceService logSourceService;
 	
@@ -69,6 +72,9 @@ public class DlcLogQueryController {
 		ModelAndView modelAndView = new ModelAndView("search_results");
 		if (defaultLogSource == null) {
 			modelAndView.addObject("errorMsg", "日志源未设置，至左侧菜单栏日志源设置");
+			DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
+					keyWord, 0, null, pageParam);
+			modelAndView.addObject("dlcLogResult", dlcLogResult);
             return modelAndView;
 		}
 		String appName = defaultLogSource.getAppName();
