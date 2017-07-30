@@ -39,6 +39,13 @@
         <!-- Set to true to enable distributed class loading for examples, default is false. -->
         <property name="peerClassLoadingEnabled" value="true"/>
 
+        <!-- set cluster node attributes-->
+        <property name="userAttributes">
+            <map>
+                <entry key="ROLE" value="dlc-example"/>
+            </map>
+        </property>
+
         <!-- Enable task execution events for examples. -->
         <property name="includeEventTypes">
             <list>

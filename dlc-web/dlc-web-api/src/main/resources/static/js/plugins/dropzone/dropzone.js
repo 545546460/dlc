@@ -1506,7 +1506,7 @@
                     element = document.querySelector(element);
                 }
                 if ((element != null ? element.dropzone : void 0) == null) {
-                    throw new Error("No Dropzone found for given element. This is probably because you're trying to access it before Dropzone had the time to initialize. Use the `init` option to setup any additional observers on your Dropzone.");
+                    throw new Error("No Dropzone found for given element. This is probably because you're trying to callback it before Dropzone had the time to initialize. Use the `init` option to setup any additional observers on your Dropzone.");
                 }
                 return element.dropzone;
             };

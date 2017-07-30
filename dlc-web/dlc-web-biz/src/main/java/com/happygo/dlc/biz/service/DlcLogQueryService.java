@@ -20,19 +20,22 @@ import com.happgo.dlc.base.bean.PageParam;
 
 /**
  * ClassName:DlcLogQueryService
+ *
+ * @author sxp (1378127237@qq.com)
  * @Description: DlcLogQueryService.java
- * @author sxp (1378127237@qq.com) 
- * @date:2017年6月4日 上午9:21:11
+ * @date:2017年6月4日 上午9 :21:11
  */
 public interface DlcLogQueryService {
-	
+
 	/**
-	* @MethodName: logQuery
-	* @Description: the logQuery
-	* @param keyWord
-	* @param pageParam
-	* @return List<List<DlcLog>>
-	*/
-	List<List<DlcLog>> logQuery(String keyWord, PageParam pageParam);
+	 * Log query list.
+	 * @MethodName: logQuery
+	 * @Description: the logQuery
+	 * @param keyWord   the key word
+	 * @param appName   the app name
+	 * @param pageParam the page param
+	 * @return List<List DlcLog>>
+	 */
+	List<List<DlcLog>> logQuery(String keyWord, String appName, PageParam pageParam);
 
 }

@@ -82,7 +82,7 @@
 	
 	/*
 	 * It is useful to have variables which are scoped locally so only the
-	 * DataTables functions can access them and they don't leak into global space.
+	 * DataTables functions can callback them and they don't leak into global space.
 	 * At the same time these functions are often useful over multiple files in the
 	 * core and API, so we list, or at least document, all variables which are used
 	 * by DataTables as private variables here. This also ensures that there is no
@@ -7236,7 +7236,7 @@
 	 * @returns {DataTables.Api} this
 	 */
 	_api_register( 'ajax.url().load()', function ( callback, resetPaging ) {
-		// Same as a reload, but makes sense to present it for easy access after a
+		// Same as a reload, but makes sense to present it for easy callback after a
 		// url change
 		return this.iterator( 'table', function ( ctx ) {
 			__reload( ctx, resetPaging===false, callback );
@@ -8836,7 +8836,7 @@
 	
 		/**
 		 * Function to get data from a cell in a column. You should <b>never</b>
-		 * access data directly through _aData internally in DataTables - always use
+		 * callback data directly through _aData internally in DataTables - always use
 		 * the method attached to this property. It allows mData to function as
 		 * required. This function is automatically assigned by the column
 		 * initialisation method
@@ -12422,7 +12422,7 @@
 		"aoStateLoaded": [],
 	
 		/**
-		 * Cache the table ID for quick access
+		 * Cache the table ID for quick callback
 		 *  @type string
 		 *  @default <i>Empty string</i>
 		 */
@@ -13827,7 +13827,7 @@
 	} );
 	
 
-	// jQuery access
+	// jQuery callback
 	$.fn.dataTable = DataTable;
 
 	// Legacy aliases

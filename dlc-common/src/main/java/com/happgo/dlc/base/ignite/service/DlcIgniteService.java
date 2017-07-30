@@ -19,20 +19,23 @@ import com.happgo.dlc.base.bean.DlcLog;
 
 /**
  * ClassName:DlcIgniteService
- * 
- * @Description: DlcIgniteService.java
+ *
  * @author sxp (1378127237@qq.com)
- * @date:2017年6月1日 下午3:10:14
+ * @Description: DlcIgniteService.java
+ * @date:2017年6月1日 下午3 :10:14
  */
 public interface DlcIgniteService {
-	
+
 	/**
-	* @MethodName: logQuery
-	* @Description: the logQuery
-	* @param keyWord
-	* @param queryMode
-	* @return List<DlcLog>
-	*/
-	List<DlcLog> logQuery(String keyWord, String queryMode);
+	 * Log query list.
+	 *
+	 * @param keyWord   the key word
+	 * @param appName   the app name
+	 * @param queryMode the query mode
+	 * @return List<DlcLog>  list
+	 * @MethodName: logQuery
+	 * @Description: the logQuery
+	 */
+	List<DlcLog> logQuery(String keyWord, String appName, String queryMode);
 
 }

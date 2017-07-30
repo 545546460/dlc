@@ -35,6 +35,7 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -79,6 +80,10 @@ public class DlcMoreLikeThisSearchTask extends
         Map<String, LuceneIndexWriter> writeMap = LuceneAppender.writerMap;
         Map.Entry<String, LuceneIndexWriter> entry = CollectionUtils.getFirstEntry(writeMap);
         final String targetPath = entry.getKey();
+        //如果索引文件夹不存在，直接返回
+        if (!new File(targetPath).exists()) {
+            return map;
+        }
         if (LOGEER.isDebugEnabled()) {
             LOGEER.debug(">>> Search keyWord '" + keyWord
                     + "' on this node from target path '" + targetPath

@@ -685,7 +685,7 @@ More detail and specific examples can be found in the included HTML file.
 				if (series.angle < 0) return;
 				
 				//octx.fillStyle = parseColor(options.series.pie.highlight.color).scale(null, null, null, options.series.pie.highlight.opacity).toString();
-				octx.fillStyle = "rgba(255, 255, 255, "+options.series.pie.highlight.opacity+")"; // this is temporary until we have access to parseColor
+				octx.fillStyle = "rgba(255, 255, 255, "+options.series.pie.highlight.opacity+")"; // this is temporary until we have callback to parseColor
 				
 				octx.beginPath();
 				if (Math.abs(series.angle - Math.PI*2) > 0.000000001)

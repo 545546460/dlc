@@ -62,7 +62,9 @@ public class DlcLogQueryController {
 		LOGGER.info("^------- DLC 日志查询开始，keyWord:[" + keyWord + "] -------^");
 		long startTime = System.currentTimeMillis();
 		PageParam pageParam = new PageParam(pageNum, numPerPage);
-		List<List<DlcLog>> queryDlcLogs = dlcLogQueryService.logQuery(keyWord.trim(), pageParam);
+		//TODO:从内存数据库获取默认日志源
+		String appName = "";
+		List<List<DlcLog>> queryDlcLogs = dlcLogQueryService.logQuery(keyWord.trim(), appName, pageParam);
 		long endTime = System.currentTimeMillis();
 		long searchTime = endTime - startTime;
 		DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
