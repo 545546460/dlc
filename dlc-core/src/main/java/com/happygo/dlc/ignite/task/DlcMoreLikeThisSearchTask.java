@@ -208,7 +208,7 @@ public class DlcMoreLikeThisSearchTask extends
             DlcLog dlcLog = null;
             for (final Document doc : subDocList) {
                 String content = doc.get(DlcConstants.DLC_CONTENT);
-                if (content.contains(keyWord)) {
+                if (content.contains(keyWord) || DlcConstants.SYMBOY_ANY.equals(keyWord)) {
                     content = Strings.fillPreAndPostTagOnTargetString(DlcConstants.DLC_HIGHLIGHT_PRE_TAG,
                             DlcConstants.DLC_HIGHLIGHT_POST_TAG, keyWord, content);
                     String level = doc.get(DlcConstants.DLC_LEVEL);

@@ -3,9 +3,9 @@
  *
  * All  right  reserved.
  *
- * Created  on  2017年7月27日 下午18:56:22
+ * Created  on  2017年7月30日 下午7:40:00
  *
- * @Package DruidDataSourceConf
+ * @Package com.happygo.dlc.dal.mybatis
  * @Title: DruidDataSourceConf.java
  * @Description: DruidDataSourceConf.java
  * @author sxp (1378127237@qq.com)
@@ -16,22 +16,27 @@ package com.happygo.dlc.dal.mybatis;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
  * ClassName:DruidDataSourceConf
- *
- * @author sxp (1378127237@qq.com)
  * @Description: DruidDataSourceConf.java
- * @date:2017年7月27日 下午18 :56:22
+ * @author sxp (1378127237@qq.com) 
+ * @date:2017年7月30日 下午7:40:00
  */
 @Configuration
+@PropertySource("datasource.properties")
 public class DruidDataSourceConf {
 
     /**
@@ -39,61 +44,120 @@ public class DruidDataSourceConf {
      */
     private static final Logger LOGGER = LogManager.getLogger();
 
-    @Value("${spring.datasource.url}")
+    /**
+     * The Db url.
+     */
+    @Value("${dlc.web.druid.datasource.url}")
     private String dbUrl;
 
-    @Value("${spring.datasource.username}")
+    /**
+     * The Username.
+     */
+    @Value("${dlc.web.druid.datasource.username}")
     private String username;
 
-    @Value("${spring.datasource.password}")
+    /**
+     * The Password.
+     */
+    @Value("${dlc.web.druid.datasource.password}")
     private String password;
 
-    @Value("${spring.datasource.driver-class-name}")
+    /**
+     * The Driver class name.
+     */
+    @Value("${dlc.web.druid.datasource.driver-class-name}")
     private String driverClassName;
 
-    @Value("${spring.datasource.initialSize}")
+    /**
+     * The Initial size.
+     */
+    @Value("${dlc.web.druid.datasource.initialSize}")
     private int initialSize;
 
-    @Value("${spring.datasource.minIdle}")
+    /**
+     * The Min idle.
+     */
+    @Value("${dlc.web.druid.datasource.minIdle}")
     private int minIdle;
 
-    @Value("${spring.datasource.maxActive}")
+    /**
+     * The Max active.
+     */
+    @Value("${dlc.web.druid.datasource.maxActive}")
     private int maxActive;
 
-    @Value("${spring.datasource.maxWait}")
+    /**
+     * The Max wait.
+     */
+    @Value("${dlc.web.druid.datasource.maxWait}")
     private int maxWait;
 
-    @Value("${spring.datasource.timeBetweenEvictionRunsMillis}")
+    /**
+     * The Time between eviction runs millis.
+     */
+    @Value("${dlc.web.druid.datasource.timeBetweenEvictionRunsMillis}")
     private int timeBetweenEvictionRunsMillis;
 
-    @Value("${spring.datasource.minEvictableIdleTimeMillis}")
+    /**
+     * The Min evictable idle time millis.
+     */
+    @Value("${dlc.web.druid.datasource.minEvictableIdleTimeMillis}")
     private int minEvictableIdleTimeMillis;
 
-    @Value("${spring.datasource.validationQuery}")
+    /**
+     * The Validation query.
+     */
+    @Value("${dlc.web.druid.datasource.validationQuery}")
     private String validationQuery;
 
-    @Value("${spring.datasource.testWhileIdle}")
+    /**
+     * The Test while idle.
+     */
+    @Value("${dlc.web.druid.datasource.testWhileIdle}")
     private boolean testWhileIdle;
 
-    @Value("${spring.datasource.testOnBorrow}")
+    /**
+     * The Test on borrow.
+     */
+    @Value("${dlc.web.druid.datasource.testOnBorrow}")
     private boolean testOnBorrow;
 
-    @Value("${spring.datasource.testOnReturn}")
+    /**
+     * The Test on return.
+     */
+    @Value("${dlc.web.druid.datasource.testOnReturn}")
     private boolean testOnReturn;
 
-    @Value("${spring.datasource.poolPreparedStatements}")
+    /**
+     * The Pool prepared statements.
+     */
+    @Value("${dlc.web.druid.datasource.poolPreparedStatements}")
     private boolean poolPreparedStatements;
 
-    @Value("${spring.datasource.filters}")
+    /**
+     * The Max open prepared statements.
+     */
+    @Value("${dlc.web.druid.datasource.maxOpenPreparedStatements}")
+    private int maxOpenPreparedStatements;
+
+    /**
+     * The Filters.
+     */
+    @Value("${dlc.web.druid.datasource.filters}")
     private String filters;
 
+    /**
+     * The Schema.
+     */
+    @Value("${dlc.web.druid.datasource.schema}")
+    private String schema;
 
     /**
      * Druid data source data source.
      *
      * @return the data source
      */
-    @Bean
+    @Bean(name = "druidDataSource")
     @Primary
     public DataSource druidDataSource(){
         DruidDataSource datasource = new DruidDataSource();
@@ -112,11 +176,27 @@ public class DruidDataSourceConf {
         datasource.setTestOnBorrow(testOnBorrow);
         datasource.setTestOnReturn(testOnReturn);
         datasource.setPoolPreparedStatements(poolPreparedStatements);
+        datasource.setMaxOpenPreparedStatements(maxOpenPreparedStatements);
         try {
             datasource.setFilters(filters);
         } catch (SQLException e) {
             LOGGER.error("druid configuration initialization filter", e);
         }
         return datasource;
+    }
+
+    /**
+     * Init db initializing bean.
+     *
+     * @return the initializing bean
+     */
+    @Bean
+    public InitializingBean initDb() {
+        ClassPathResource sqlResource = new ClassPathResource(schema);
+        DataSourceInitializer dsi = new DataSourceInitializer();
+        dsi.setDataSource(druidDataSource());
+        dsi.setDatabasePopulator(new ResourceDatabasePopulator(true, true, "utf-8", sqlResource));
+        dsi.setEnabled(true);
+        return dsi;
     }
 }

@@ -143,4 +143,3 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
         return splitLogQueryDlcLogs;
     }
 }
-
