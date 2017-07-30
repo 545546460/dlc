@@ -47,4 +47,9 @@ public class HtmlHandleController {
 	public ModelAndView index_v1() {
 		return new ModelAndView("pin_board");
 	}
+
+	@RequestMapping(value = "/logsource/add")
+	public ModelAndView addLogSource() {
+		return new ModelAndView("add_logsource");
+	}
 }
