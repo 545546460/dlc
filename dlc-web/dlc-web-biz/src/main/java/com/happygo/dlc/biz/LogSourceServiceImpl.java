@@ -78,4 +78,20 @@ public class LogSourceServiceImpl implements LogSourceService {
         }
         logSourceMapper.insert(logSource);
     }
+
+	/* (non-Javadoc)
+	 * @see com.happygo.dlc.biz.service.LogSourceService#updateLogSource(int)
+	 */
+	@Override
+	public void updateLogSource(int id) {
+        LogSource queryLogSource = logSourceMapper.selectBy(DlcConstants.DEFAULT);
+        if (queryLogSource != null) {
+            queryLogSource.setSelected("");
+            logSourceMapper.updateByPrimaryKey(queryLogSource);
+        }
+		LogSource logSource = new LogSource();
+		logSource.setId(id);
+		logSource.setSelected(DlcConstants.DEFAULT);
+		logSourceMapper.updateByPrimaryKey(logSource);
+	}
 }

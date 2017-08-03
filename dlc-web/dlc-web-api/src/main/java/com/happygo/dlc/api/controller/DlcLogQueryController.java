@@ -71,7 +71,7 @@ public class DlcLogQueryController {
 		LogSource defaultLogSource = logSourceService.selectDefault(DlcConstants.DEFAULT);
 		ModelAndView modelAndView = new ModelAndView("search_results");
 		if (defaultLogSource == null) {
-			modelAndView.addObject("errorMsg", "日志源未设置，至左侧菜单栏日志源设置");
+			modelAndView.addObject("message", "fail");
 			DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
 					keyWord, 0, null, pageParam);
 			modelAndView.addObject("dlcLogResult", dlcLogResult);

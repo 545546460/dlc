@@ -1,3 +1,16 @@
+/**
+ * Copyright  2017
+ * <p>
+ * All  right  reserved.
+ * <p>
+ * Created  on  2017年7月30日 下午7:35:00
+ *
+ * @Package com.happygo.dlc.api.controller
+ * @Title: DlcLogSourceController.java
+ * @Description: DlcLogSourceController.java
+ * @author sxp (1378127237@qq.com)
+ * @version 1.0.0
+ */
 package com.happygo.dlc.api.controller;
 
 import com.happygo.dlc.biz.service.LogSourceService;
@@ -22,15 +35,31 @@ import java.util.List;
 @RequestMapping("/dlc")
 public class DlcLogSourceController {
 
+    /**
+     * LogSourceService the logSourceService 
+     */
     @Autowired
     private LogSourceService logSourceService;
 
+    /**
+    * @MethodName: insert
+    * @Description: the insert
+    * @param logSource
+    * @return ModelAndView
+    */
     @PostMapping(value = "/logsource/insert")
     public ModelAndView insert(LogSource logSource) {
         logSourceService.saveLogSource(logSource);
-        return selectList();
+        ModelAndView modelAndView = new ModelAndView("add_logsource");
+        modelAndView.addObject("message", "success");
+        return modelAndView;
     }
 
+    /**
+    * @MethodName: selectList
+    * @Description: the selectList
+    * @return ModelAndView
+    */
     @GetMapping(value = "/logsource/select/list")
     public ModelAndView selectList() {
         ModelAndView modelAndView = new ModelAndView("logsource_list");
@@ -39,12 +68,31 @@ public class DlcLogSourceController {
             modelAndView.addObject("logSourceList", new ArrayList<>(0));
         }
         modelAndView.addObject("logSourceList", logSourceList);
+        modelAndView.addObject("message", "success");
         return modelAndView;
     }
 
-    @GetMapping(value = "/logsource/delete")
+    /**
+    * @MethodName: deleteLogSource
+    * @Description: the deleteLogSource
+    * @param id
+    * @return ModelAndView
+    */
+    @PostMapping(value = "/logsource/delete")
     public ModelAndView deleteLogSource(@RequestParam("id") int id) {
         logSourceService.deleteLogSource(id);
+        return selectList();
+    }
+    
+    /**
+    * @MethodName: updateLogSource
+    * @Description: the updateLogSource
+    * @param id
+    * @return ModelAndView
+    */
+    @PostMapping(value = "/logsource/update")
+    public ModelAndView updateLogSource(@RequestParam("id") int id) {
+        logSourceService.updateLogSource(id);
         return selectList();
     }
 }

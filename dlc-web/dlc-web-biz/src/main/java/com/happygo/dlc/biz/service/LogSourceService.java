@@ -53,4 +53,11 @@ public interface LogSourceService {
     * @param logSource
     */
     void saveLogSource(LogSource logSource);
+    
+    /**
+    * @MethodName: updateLogSource
+    * @Description: the updateLogSource
+    * @param id
+    */
+    void updateLogSource(int id);
 }

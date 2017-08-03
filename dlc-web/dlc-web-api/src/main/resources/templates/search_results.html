@@ -19,13 +19,15 @@
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link href="/css/bootstrap.min.css?v=3.3.5" rel="stylesheet">
     <link href="/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
-
+    <!-- Sweet Alert -->
+    <link href="/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="/css/animate.min.css" rel="stylesheet">
     <link href="/css/style.min.css?v=4.0.0" rel="stylesheet">
     <base target="_self">
 </head>
 
 <body class="gray-bg">
+<input id="message" type="hidden" value="${message!}"/>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
         <div class="col-sm-12">
@@ -96,7 +98,7 @@
                         </div>
                         <#else>
                             <div class="search-result">
-                                <h3 align="center">抱歉！没有找到"${dlcLogResult.keyWord}"有关的日志记录。
+                                <h3 align="center">抱歉！没有找到"${dlcLogResult.keyWord}"有关的日志记录或者日志源不存在！
                                 </h3>
                             </div>
                     </#if>
@@ -108,7 +110,16 @@
 <script src="/js/jquery.min.js?v=2.1.4"></script>
 <script src="/js/bootstrap.min.js?v=3.3.5"></script>
 <script src="/js/content.min.js?v=1.0.0"></script>
+<script src="/js/plugins/sweetalert/sweetalert.min.js"></script>
 <script type="text/javascript">
+	$(document).ready(function() {
+		if ($("input[id='message']").val() == "fail") {
+			swal({
+				title : "Warning",
+				text : "日志源未设置，请至主页 左侧菜单 >> 新增日志源！"
+			})
+		}
+	});
     function getwith(to, p) {
         var myForm = document.createElement("form");
         myForm.method = "get";
