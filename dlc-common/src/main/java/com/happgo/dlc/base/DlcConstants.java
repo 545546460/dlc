@@ -86,4 +86,14 @@ public interface DlcConstants {
 	 * String the SYMBOL_AT 
 	 */
 	String SYMBOL_AT = "@";
+
+	/**
+	 * String the SYMBOY_ANY 
+	 */
+	String SYMBOY_ANY = "*";
+
+	/**
+	 * String the DEFAULT 
+	 */
+	String DEFAULT = "default";
 }

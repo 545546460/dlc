@@ -13,21 +13,22 @@
  */
 package com.happygo.dlc.ignite.service;
 
-import java.util.List;
-
+import com.happgo.dlc.base.DlcConstants;
+import com.happgo.dlc.base.bean.DlcLog;
+import com.happgo.dlc.base.ignite.service.DlcIgniteService;
+import com.happygo.dlc.ignite.task.DlcKeywordSearchTask;
+import com.happygo.dlc.ignite.task.DlcMoreLikeThisSearchTask;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterGroup;
+import org.apache.ignite.cluster.ClusterGroupEmptyException;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.services.Service;
 import org.apache.ignite.services.ServiceContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.happgo.dlc.base.DlcConstants;
-import com.happgo.dlc.base.bean.DlcLog;
-import com.happgo.dlc.base.ignite.service.DlcIgniteService;
-import com.happygo.dlc.ignite.task.DlcKeywordSearchTask;
-import com.happygo.dlc.ignite.task.DlcMoreLikeThisSearchTask;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ClassName:DlcIgniteServiceImpl
@@ -59,15 +60,16 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	 * @param keyWord
 	 */
 	public List<DlcLog> logQuery(String keyWord, String appName, String queryMode) {
-		ClusterGroup workers = ignite.cluster().forAttribute("ROLE", appName);
-		if (workers == null) {
+		try {
+			ClusterGroup workers = ignite.cluster().forAttribute("ROLE", appName);
+			if (DlcConstants.DLC_MORE_LIKE_THIS_QUERY_MODE.equals(queryMode)) {
+				return ignite.compute(workers).execute(DlcMoreLikeThisSearchTask.class, keyWord);
+			}
+			return ignite.compute(workers).execute(DlcKeywordSearchTask.class, keyWord);
+		} catch (ClusterGroupEmptyException e) {
 			LOGEER.warn("Not find cluster nodes of appName:[" + appName + "]!");
-			return null;
+			return new ArrayList<>(0);
 		}
-		if (DlcConstants.DLC_MORE_LIKE_THIS_QUERY_MODE.equals(queryMode)) {
-			return ignite.compute(workers).execute(DlcMoreLikeThisSearchTask.class, keyWord);
-		}
-		return ignite.compute(workers).execute(DlcKeywordSearchTask.class, keyWord);
 	}
 
 	/**

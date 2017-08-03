@@ -13,10 +13,13 @@
  */
 package com.happygo.dlc.api.controller;
 
+import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.bean.PageParam;
 import com.happygo.dlc.biz.service.DlcLogQueryService;
+import com.happygo.dlc.biz.service.LogSourceService;
 import com.happygo.dlc.common.entity.DlcLogResult;
+import com.happygo.dlc.common.entity.LogSource;
 import com.happygo.dlc.common.entity.helper.DlcLogResultHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +49,13 @@ public class DlcLogQueryController {
 	* The field dlcLogQueryService
 	*/
 	@Autowired
-	private DlcLogQueryService dlcLogQueryService;
+	private transient DlcLogQueryService dlcLogQueryService;
+
+	/**
+	 * LogSourceService the logSourceService 
+	 */
+	@Autowired
+	private transient LogSourceService logSourceService;
 	
 	/**
 	 * @MethodName: logQuery
@@ -54,22 +63,26 @@ public class DlcLogQueryController {
 	 * @param keyWord
 	 * @return String
 	 */
-	@GetMapping(value = "/log/query", produces = { "application/json" })
+	@GetMapping(value = "/log/query")
 	public ModelAndView logQuery(
-			@RequestParam(value = "keyWord") String keyWord,
-	        @RequestParam(value = "pageNum")int pageNum,
-			@RequestParam(value = "numPerPage")int numPerPage) {
+			@RequestParam(value = "keyWord") String keyWord, PageParam pageParam) {
 		LOGGER.info("^------- DLC 日志查询开始，keyWord:[" + keyWord + "] -------^");
 		long startTime = System.currentTimeMillis();
-		PageParam pageParam = new PageParam(pageNum, numPerPage);
-		//TODO:从内存数据库获取默认日志源
-		String appName = "";
+		LogSource defaultLogSource = logSourceService.selectDefault(DlcConstants.DEFAULT);
+		ModelAndView modelAndView = new ModelAndView("search_results");
+		if (defaultLogSource == null) {
+			modelAndView.addObject("message", "fail");
+			DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
+					keyWord, 0, null, pageParam);
+			modelAndView.addObject("dlcLogResult", dlcLogResult);
+            return modelAndView;
+		}
+		String appName = defaultLogSource.getAppName();
 		List<List<DlcLog>> queryDlcLogs = dlcLogQueryService.logQuery(keyWord.trim(), appName, pageParam);
 		long endTime = System.currentTimeMillis();
 		long searchTime = endTime - startTime;
 		DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
 				keyWord, searchTime, queryDlcLogs, pageParam);
-		ModelAndView modelAndView = new ModelAndView("search_results");
 		modelAndView.addObject("dlcLogResult", dlcLogResult);
 		LOGGER.info("^------- DLC 日志查询结束  -------^");
 		return modelAndView;
@@ -81,7 +94,7 @@ public class DlcLogQueryController {
 	* @param logDetail
 	* @return ModelAndView
 	*/
-	@GetMapping(value = "/log/detail", produces = { "application/json" })
+	@GetMapping(value = "/log/detail")
 	public ModelAndView logDetail(@RequestParam("logDetail")String logDetail) {
 		ModelAndView modelAndView = new ModelAndView("search_results_detail");
 		modelAndView.addObject("logDetail", logDetail);
