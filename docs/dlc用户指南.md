@@ -1,5 +1,6 @@
 # Distributed Log Collected用户指南
-
+      <a href="https://github.com/gaoxianglong/shark/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/gaoxianglong/shark/tarball/master" class="btn">Download .tar.gz</a>
 ***
 ## 目录
 > ### 1. dlc入门
