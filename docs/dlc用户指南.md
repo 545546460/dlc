@@ -1,6 +1,5 @@
 # Distributed Log Collected用户指南
-      <a href="https://github.com/gaoxianglong/shark/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/gaoxianglong/shark/tarball/master" class="btn">Download .tar.gz</a>
+[Download zip](https://github.com/xiapshen/dlc/zipball/master)
 ***
 ## 目录
 > ### 1. dlc入门
@@ -187,9 +186,9 @@ public DlcIgniteServicesExporter expoter() {
 ```
 ### 3.1. dlc-web配置
 #### 3.1.1. 下载dlc-web-xxx.zip
-下载dlc-web-xxx.zip，下载地址：
+下载dlc源码，通过maven打包，会在target下生成dlc-web-xxx.zip
 #### 3.1.2. 配置
-将zip文件解到指定部署机器，将config/dlc-default.xml中<value>127.0.0.1:47500..47509</value>替换成真实部署机器IP地址，如果需要有需要可修改如下粗体内容配置
+将zip文件解压到指定部署机器，将config/dlc-default.xml中<value>127.0.0.1:47500..47509</value>替换成真实部署机器IP地址，如果需要有需要可修改如下粗体内容配置
 ```
 <!-- Config ignite client cache -->
 <property name="cacheConfiguration">
