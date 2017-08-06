@@ -47,8 +47,8 @@ demo:https://github.com/xiapshen/dlc/tree/master/exmple/dlc-example
 
 ## 7.FAQ
 1、如果项目中使用的h2为其他版本，ignite无法启动，如何解决？
-答：
-修改h2 jar为1.4.191版本
+
+答：修改h2 jar为1.4.191版本
 ```
 <dependency>
 	<groupId>com.happygo.dlc</groupId>
