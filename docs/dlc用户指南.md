@@ -1,5 +1,5 @@
 # Distributed Log Collected用户指南
-[Download zip](https://github.com/xiapshen/dlc/zipball/master)
+
 ***
 ## 目录
 > ### 1. dlc入门
