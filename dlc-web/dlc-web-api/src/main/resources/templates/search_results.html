@@ -40,7 +40,7 @@
                     <small>搜索用时 (${dlcLogResult.searchTime}秒)</small>
 
                     <div class="search-form">
-                        <form action="/dlc/log/query" method="get">
+                        <form action="/dlc/log/query" method="post">
                             <div class="input-group">
                                 <input type="text" placeholder="输入关键字" name="keyWord"
                                        class="form-control input-lg" value="${dlcLogResult.keyWord}"
@@ -66,7 +66,7 @@
 
                                 <h3>
                                     <#if dlcLogBaseResult.content?length gt 256>
-                                        <form id="detail_form" action="/dlc/log/detail" method="get">
+                                        <form id="detail_form" action="/dlc/log/detail" method="post">
                                             <input type="text" name="logDetail" value="${dlcLogBaseResult.content}" hidden>
                                             <a href="javascript:document:detail_form.submit();">
                                                 ${dlcLogBaseResult.content?substring(0, 256)}...
@@ -122,7 +122,7 @@
 	});
     function getwith(to, p) {
         var myForm = document.createElement("form");
-        myForm.method = "get";
+        myForm.method = "post";
         myForm.action = to;
         for (var k in p) {
             var myInput = document.createElement("input");

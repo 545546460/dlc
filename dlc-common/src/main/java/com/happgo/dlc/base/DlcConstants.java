@@ -78,11 +78,6 @@ public interface DlcConstants {
 	String DLC_LOG_QUERY_SERVICE_NAME = "dlcIgniteService";
 	
 	/**
-	 * String the DLC_MORE_LIKE_THIS_QUERY_MODE 
-	 */
-	String DLC_MORE_LIKE_THIS_QUERY_MODE = "moreLikeThis";
-	
-	/**
 	 * String the SYMBOL_AT 
 	 */
 	String SYMBOL_AT = "@";
@@ -91,9 +86,49 @@ public interface DlcConstants {
 	 * String the SYMBOY_ANY 
 	 */
 	String SYMBOY_ANY = "*";
+	
+	/**
+	 * String the SYMBOY_COLON 
+	 */
+	String SYMBOY_COLON =":";
+	
+	/**
+	 * String the SYMBOY_START_BRACKET 
+	 */
+	String SYMBOY_START_BRACKET ="[";
+	
+	/**
+	 * String the SYMBOY_END_BRACKET 
+	 */
+	String SYMBOY_END_BRACKET ="]";
+	
+	/**
+	 * String the SYMBOY_START_BRACE 
+	 */
+	String SYMBOY_START_BRACE = "{";
+	
+	/**
+	 * String the SYMBOY_END_BRACE 
+	 */
+	String SYMBOY_END_BRACE = "}";
 
 	/**
 	 * String the DEFAULT 
 	 */
 	String DEFAULT = "default";
+	
+	/**
+	 * String the CHARACTER_TO 
+	 */
+	String CHARACTER_TO = "TO";
+	
+	/**
+	 * String the CHARACTER_AND 
+	 */
+	String CHARACTER_AND = "AND";
+	
+	/**
+	 * String the CHARACTER_OR 
+	 */
+	String CHARACTER_OR = "OR";
 }

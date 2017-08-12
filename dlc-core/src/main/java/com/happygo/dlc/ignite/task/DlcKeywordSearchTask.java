@@ -29,7 +29,7 @@ import org.apache.ignite.compute.ComputeTaskAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
 
@@ -89,13 +89,10 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
                             + "' on this node from target path '" + targetPath
                             + "'");
                 }
-                KeywordAnalyzer analyzer = new KeywordAnalyzer();
+                CJKAnalyzer analyzer = new CJKAnalyzer();
                 LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
                         .indexSearcher(targetPath, analyzer);
-                ScoreDoc[] scoreDocs = indexSearcher.phraseSearch(DlcConstants.DLC_CONTENT,
-                        keyWord, DlcConstants.DLC_HIGHLIGHT_PRE_TAG,
-                        DlcConstants.DLC_HIGHLIGHT_POST_TAG,
-                        DlcConstants.DLC_FRAGMENT_SIZE);
+                ScoreDoc[] scoreDocs = indexSearcher.search(keyWord, 1, 1);
                 return buildDlcLogs(scoreDocs, indexSearcher, analyzer);
             }
         }, node);
@@ -143,8 +140,7 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
         Document doc = null;
         for (final ScoreDoc scoreDoc : scoreDocs) {
             doc = iSearcher.hitDocument(scoreDoc);
-            String content = iSearcher.luceneHighlighter.getBestFragment(
-                    analyzer, doc, DlcConstants.DLC_CONTENT);
+            String content = doc.get(DlcConstants.DLC_CONTENT);
             String level = doc.get(DlcConstants.DLC_LEVEL);
             long time = (doc.getField(DlcConstants.DLC_TIME)) == null ? 0
                     : (Long) doc.getField(DlcConstants.DLC_TIME).numericValue();

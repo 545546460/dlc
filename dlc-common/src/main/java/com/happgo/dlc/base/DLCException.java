@@ -50,6 +50,7 @@ public class DLCException extends RuntimeException {
 	 */
 	public DLCException(String message) {
 		this(message, null);
+		this.message = message;
 	}
 	
 	/**
@@ -57,5 +58,6 @@ public class DLCException extends RuntimeException {
 	 */
 	public DLCException(String message, Throwable e) {
 		super(message, e);
+		this.message = message;
 	}
 }

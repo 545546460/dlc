@@ -47,28 +47,24 @@ public class DlcMoreLikeThisLogQueryCallback implements IgniteCallable<List<DlcL
 	 */
 	private String keyWord;
 
-	private String appName;
-	
 	/**
-	 * String the queryMode 
+	 * String the appName 
 	 */
-	private String queryMode;
+	private String appName;
 	
 	/**
 	 * Constructor com.happygo.dlc.dal.callback.DlcMoreLikeThisLogQueryCallback
 	 * @param keyWord
-	 * @param queryMode
 	 */
-	public DlcMoreLikeThisLogQueryCallback(String keyWord, String appName, String queryMode) {
+	public DlcMoreLikeThisLogQueryCallback(String keyWord, String appName) {
 		this.keyWord = keyWord;
 		this.appName = appName;
-		this.queryMode = queryMode;
 	}
 
 	/* (non-Javadoc)
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	public List<DlcLog> call() throws Exception {
-		return dlcIgniteService.logQuery(keyWord, appName, queryMode);
+		return dlcIgniteService.logQuery(keyWord, appName);
 	}
 }
