@@ -56,6 +56,7 @@
                         </form>
                         <!-- 查询字段 -->
                         <#if (queryConditions?size>0)>
+                        <h5>可选查询字段:</h5>
                         <ul class="tag-list" style="padding: 0">
                             <#list queryConditions as queryCondition>
                                  <li><a href="#"><i class="fa fa-tag"></i> ${queryCondition}</a></li>
