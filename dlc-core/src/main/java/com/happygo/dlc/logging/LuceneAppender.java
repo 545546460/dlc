@@ -19,6 +19,7 @@ import com.happgo.dlc.base.util.Assert;
 import com.happgo.dlc.base.util.Strings;
 import com.happygo.dlc.lucene.DocumentUtils;
 import com.happygo.dlc.lucene.LuceneIndexWriter;
+
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +89,11 @@ public class LuceneAppender extends AbstractAppender {
 	 * LuceneIndexWriter corresponding to each index directory.
 	 */
     public static final ConcurrentHashMap<String, LuceneIndexWriter> writerMap = new ConcurrentHashMap<String, LuceneIndexWriter>();
+    
+    /**
+     * List<String> the indexFieldNameList 
+     */
+    public static final List<String> indexFieldNameList = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Constructor com.happygo.dlc.log.LuceneAppender
@@ -107,11 +114,24 @@ public class LuceneAppender extends AbstractAppender {
 		this.indexFields = indexFields;
 		//校验必填索引字段
 		validateRequiredIndexFields(indexFields);
+		initIndexFieldNames();
 		//初始化writeMap
 		initLuceneIndexWriter();
 		if (expiryTime != null) {
 			//注册定时清理过期索引文件定时器
 			registerClearTimer();
+		}
+	}
+	
+	/**
+	* @MethodName: initIndexFieldNames
+	* @Description: the getIndexFieldNames
+	*/
+	private void initIndexFieldNames() {
+		for (final LuceneIndexField luceneIndexField : indexFields) {
+			if (!DlcConstants.SYSTEM_NAME.equalsIgnoreCase(luceneIndexField.getName())) {
+				indexFieldNameList.add(luceneIndexField.getName());
+			}
 		}
 	}
 

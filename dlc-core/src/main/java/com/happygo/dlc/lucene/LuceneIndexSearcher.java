@@ -111,7 +111,8 @@ public final class LuceneIndexSearcher {
 	* @return
 	* @return ScoreDoc[]
 	*/
-	public ScoreDoc[] search(String keyWord, int minTermFreq, int minDocFreq) {
+	public ScoreDoc[] search(String keyWord, int minTermFreq, int minDocFreq, String preTag,
+			String postTag, int fragmentSize) {
 		Query query = DlcQueryParser.parse(keyWord, minTermFreq, minDocFreq, iDirectoryReader, analyzer);
 		SortField sortField = new SortField(DlcConstants.DLC_TIME, 
 				SortField.Type.LONG, true);

@@ -92,7 +92,10 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
                 CJKAnalyzer analyzer = new CJKAnalyzer();
                 LuceneIndexSearcher indexSearcher = LuceneIndexSearcher
                         .indexSearcher(targetPath, analyzer);
-                ScoreDoc[] scoreDocs = indexSearcher.search(keyWord, 1, 1);
+                ScoreDoc[] scoreDocs = indexSearcher.search(keyWord, 1, 1,
+					                		DlcConstants.DLC_HIGHLIGHT_PRE_TAG,
+					                        DlcConstants.DLC_HIGHLIGHT_POST_TAG,
+					                        DlcConstants.DLC_FRAGMENT_SIZE);
                 return buildDlcLogs(scoreDocs, indexSearcher, analyzer);
             }
         }, node);
