@@ -100,12 +100,12 @@ public interface DlcConstants {
 	/**
 	 * String the SYMBOY_START_BRACKET 
 	 */
-	String SYMBOY_START_BRACKET ="[";
+	String SYMBOY_START_BRACKET ="<";
 	
 	/**
 	 * String the SYMBOY_END_BRACKET 
 	 */
-	String SYMBOY_END_BRACKET ="]";
+	String SYMBOY_END_BRACKET =">";
 	
 	/**
 	 * String the SYMBOY_START_BRACE 

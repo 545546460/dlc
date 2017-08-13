@@ -13,12 +13,12 @@
  */
 package com.happygo.dlc.ignite.task;
 
-import com.happgo.dlc.base.DlcConstants;
-import com.happgo.dlc.base.bean.DlcLog;
-import com.happgo.dlc.base.util.CollectionUtils;
-import com.happygo.dlc.logging.LuceneAppender;
-import com.happygo.dlc.lucene.LuceneIndexSearcher;
-import com.happygo.dlc.lucene.LuceneIndexWriter;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.cluster.ClusterNode;
@@ -33,8 +33,13 @@ import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
 
-import java.io.File;
-import java.util.*;
+import com.happgo.dlc.base.DlcConstants;
+import com.happgo.dlc.base.bean.DlcLog;
+import com.happgo.dlc.base.util.CollectionUtils;
+import com.happgo.dlc.base.util.Strings;
+import com.happygo.dlc.logging.LuceneAppender;
+import com.happygo.dlc.lucene.LuceneIndexSearcher;
+import com.happygo.dlc.lucene.LuceneIndexWriter;
 
 /**
  * ClassName:DlcKeywordSearchTask
@@ -96,7 +101,7 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
 					                		DlcConstants.DLC_HIGHLIGHT_PRE_TAG,
 					                        DlcConstants.DLC_HIGHLIGHT_POST_TAG,
 					                        DlcConstants.DLC_FRAGMENT_SIZE);
-                return buildDlcLogs(scoreDocs, indexSearcher, analyzer);
+                return buildDlcLogs(keyWord, scoreDocs, indexSearcher, analyzer);
             }
         }, node);
         return map;
@@ -133,7 +138,7 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
      * @MethodName: buildDlcLogs
      * @Description: the buildDlcLogs
      */
-    public static List<DlcLog> buildDlcLogs(ScoreDoc[] scoreDocs,
+    public static List<DlcLog> buildDlcLogs(String keyWord, ScoreDoc[] scoreDocs,
                                             LuceneIndexSearcher iSearcher, Analyzer analyzer) {
         if (scoreDocs == null || scoreDocs.length == 0) {
             return null;
@@ -144,6 +149,11 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
         for (final ScoreDoc scoreDoc : scoreDocs) {
             doc = iSearcher.hitDocument(scoreDoc);
             String content = doc.get(DlcConstants.DLC_CONTENT);
+            if (!keyWord.matches("([\\s\\S]*(AND|OR|and|or)[\\s\\S]*)|([\\s\\S]*:[\\s\\S]*)") ||
+            		!keyWord.matches("[\\s\\S]*:[\\s\\S]*")) {
+            	content = Strings.fillPreAndPostTagOnTargetString(DlcConstants.DLC_HIGHLIGHT_PRE_TAG,
+            			DlcConstants.DLC_HIGHLIGHT_POST_TAG, keyWord, content);
+            }
             String level = doc.get(DlcConstants.DLC_LEVEL);
             long time = (doc.getField(DlcConstants.DLC_TIME)) == null ? 0
                     : (Long) doc.getField(DlcConstants.DLC_TIME).numericValue();

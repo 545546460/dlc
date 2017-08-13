@@ -42,17 +42,17 @@ public class DateUtils {
     /**
      * String the YYYY_MMM_DD_PATTERN 
      */
-    public static final String YYYY_MMM_DD_PATTERN = "^[1-9]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$";
+    public static final String YYYY_MMM_DD_PATTERN = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[1-2][0-9]|3[0-1]|[1-9])$";
     
     /**
      * String the YYYY_MMM_DD_HH_MM_SS_PATTERN 
      */
-    public static final String YYYY_MMM_DD_HH_MM_SS_PATTERN = "^[1-9]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\\s+(20|21|22|23|[0-1]\\d):[0-5]\\d:[0-5]\\d$";
+    public static final String YYYY_MMM_DD_HH_MM_SS_PATTERN = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[1-2][0-9]|3[0-1]|[1-9])\\s+(20|21|22|23|[0-1]\\d|\\d):([0-5]\\d|\\d):([0-5]\\d|\\d)$";
 
     /**
      * String the YYYY_MMM_DD_HH_MM_SS_SSS_PATTERN 
      */
-    public static final String YYYY_MMM_DD_HH_MM_SS_SSS_PATTERN = "^[1-9]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\\s+(20|21|22|23|[0-1]\\d):[0-5]\\d:[0-5]\\d\\s+[0-9]?[0-9]?[0-9]$";
+    public static final String YYYY_MMM_DD_HH_MM_SS_SSS_PATTERN = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[1-2][0-9]|3[0-1]|[1-9])\\s+(20|21|22|23|[0-1]\\d|\\d):([0-5]\\d|\\d):([0-5]\\d|\\d)\\s+[0-9]?[0-9]?[0-9]$";
 
     /**
      * SimpleDateFormat the simpleDateFormat 

@@ -285,42 +285,4 @@ public class DlcQueryParser {
 		}
 		return isOrBoolean;
 	}
-	
-	public static void main(String[] args) {
-		String queryStr = "level:INFO OR level:INFO AND systemName:dlc AND t:f";
-		String[] queryStrs = queryStr.split("(\\s+AND\\s+|\\s+OR\\s+|\\s+and\\s+|\\s+or\\s+)");
-		StringBuilder regexBuilder = new StringBuilder();
-		String condition;
-		String temp;
-		String replaceStr;
-		for (int i=0; i<queryStrs.length; i++) {
-			condition = queryStrs[i];
-			temp = condition + "(\\s+AND[\\s\\S]*)|(\\s+and[\\s\\S]*)";
-			regexBuilder.append(temp);
-			int start = 0;
-			int end = temp.length();
-			int tempLength = temp.length();
-			if (queryStr.matches(regexBuilder.toString())) {
-				replaceStr = condition + "(\\s+AND\\s+|\\s+and\\s+)";
-				if (i == 0) {
-					regexBuilder.replace(start, end, replaceStr);
-				} else {
-				    end = regexBuilder.length();
-					start = end - tempLength;
-					regexBuilder.replace(start, end, replaceStr);
-				}
-				System.out.println("|----匹配到AND");
-			} else {
-				replaceStr = condition + "(\\s+OR\\s+|\\s+or\\s+)";
-				if (i == 0) {
-					regexBuilder.replace(start, end, replaceStr);
-				} else {
-				    end = regexBuilder.length();
-					start = end - tempLength;
-					regexBuilder.replace(start, end, replaceStr);
-				}
-				System.out.println("|----匹配到OR");
-			}
-		}
-	}
 }
