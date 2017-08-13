@@ -257,7 +257,7 @@ public class DlcQueryParser {
 		String replaceStr;
 		for (int i = 0; i <= conditionIndex; i++) {
 			condition = queryStrs[i];
-			temp = condition + "(\\s+AND[\\s\\S]*)|(\\s+and[\\s\\S]*)";
+			temp = condition + "(\\s+AND[\\s\\S]*|\\s+and[\\s\\S]*)";
 			regexBuilder.append(temp);
 			int start = 0;
 			int end = temp.length();
