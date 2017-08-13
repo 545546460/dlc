@@ -87,7 +87,9 @@ public class DlcLogQueryController {
 		long searchTime = endTime - startTime;
 		DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
 				keyWord, searchTime, queryDlcLogs, pageParam);
+		List<String> queryConditions = dlcLogQueryService.getQueryConditions(appName);
 		modelAndView.addObject("dlcLogResult", dlcLogResult);
+		modelAndView.addObject("queryConditions", queryConditions);
 		LOGGER.info("^------- DLC 日志查询结束  -------^");
 		return modelAndView;
 	}

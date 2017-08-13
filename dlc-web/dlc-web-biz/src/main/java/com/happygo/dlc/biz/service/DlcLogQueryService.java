@@ -37,5 +37,13 @@ public interface DlcLogQueryService {
 	 * @return List<List DlcLog>>
 	 */
 	List<List<DlcLog>> logQuery(String keyWord, String appName, PageParam pageParam);
+	
+	/**
+	* @MethodName: getQueryConditions
+	* @Description: the getQueryConditions
+	* @param appName
+	* @return List<String>
+	*/
+	List<String> getQueryConditions(String appName);
 
 }

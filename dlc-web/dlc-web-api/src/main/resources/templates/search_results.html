@@ -49,11 +49,19 @@
                                 <input type="text" name="numPerPage" value="50" hidden/>
                                 <div class="input-group-btn">
                                     <button class="btn btn-lg btn-primary" type="submit">
-                                        搜一搜吧
+                                                                                                              搜一搜吧
                                     </button>
                                 </div>
                             </div>
                         </form>
+                        <!-- 查询字段 -->
+                        <#if (queryConditions?size>0)>
+                        <ul class="tag-list" style="padding: 0">
+                            <#list queryConditions as queryCondition>
+                                 <li><a href="#"><i class="fa fa-tag"></i> ${queryCondition}</a></li>
+                            </#list>
+                        </ul>
+                        </#if>
                     </div>
                     <#if (dlcLogResult.pageBean.recordList?size>0)>
                         <!-- 分布式日志搜索结果渲染 -->

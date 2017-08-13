@@ -52,7 +52,7 @@ public class DlcSystemInfoServiceImpl implements DlcSystemInfoService {
 		
 		// jvm
 		Properties props = System.getProperties();
-		String jvm = props.getProperty("java.vm.name");
+		String jvm = props.getProperty("java.vm.name") + " " + props.getProperty("java.version");
 		dlcSystemInfo.setJvm(jvm);
 		String jvmVersion = props.getProperty("java.vm.version");
 		dlcSystemInfo.setJvmVersion(jvmVersion);
