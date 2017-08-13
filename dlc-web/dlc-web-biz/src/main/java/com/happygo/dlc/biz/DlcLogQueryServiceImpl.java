@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cluster.ClusterGroup;
+import org.apache.ignite.cluster.ClusterGroupEmptyException;
 import org.apache.ignite.lang.IgniteCallable;
 import org.apache.ignite.resources.ServiceResource;
 import org.apache.logging.log4j.LogManager;
@@ -148,28 +149,35 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 	 */
 	@Override
 	public List<String> getQueryConditions(String appName) {
-		ClusterGroup clsGroup = ignite.cluster().forAttribute("ROLE", appName);
-		List<String> queryConditions = ignite.compute(clsGroup).call(new IgniteCallable<List<String>>() {
-			/**
-			 * long the serialVersionUID 
-			 */
-			private static final long serialVersionUID = 1L;
-			
-			/**
-			 * DlcQueryConditionService the queryConditionService 
-			 */
-			@ServiceResource(serviceName = DlcConstants.DLC_LOG_QUERY_CONDITION_SERVICE_NAME, 
-					proxyInterface = DlcQueryConditionService.class)
-			private DlcQueryConditionService queryConditionService;
+		try {
+			ClusterGroup clsGroup = ignite.cluster().forAttribute("ROLE", appName);
+			List<String> queryConditions = ignite.compute(clsGroup).call(
+					new IgniteCallable<List<String>>() {
+						/**
+						 * long the serialVersionUID
+						 */
+						private static final long serialVersionUID = 1L;
 
-			/* (non-Javadoc)
-			 * @see java.util.concurrent.Callable#call()
-			 */
-			@Override
-			public List<String> call() throws Exception {
-				return queryConditionService.getQueryConditions();
-			}
-		});
-		return queryConditions;
+						/**
+						 * DlcQueryConditionService the queryConditionService
+						 */
+						@ServiceResource(serviceName = DlcConstants.DLC_LOG_QUERY_CONDITION_SERVICE_NAME, proxyInterface = DlcQueryConditionService.class)
+						private DlcQueryConditionService queryConditionService;
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see java.util.concurrent.Callable#call()
+						 */
+						@Override
+						public List<String> call() throws Exception {
+							return queryConditionService.getQueryConditions();
+						}
+					});
+			return queryConditions;
+		} catch (ClusterGroupEmptyException ex) {
+			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
+			return new ArrayList<>(0);
+		}
 	}
 }

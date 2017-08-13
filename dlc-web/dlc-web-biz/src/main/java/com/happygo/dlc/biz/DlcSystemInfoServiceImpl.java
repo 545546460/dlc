@@ -73,7 +73,7 @@ public class DlcSystemInfoServiceImpl implements DlcSystemInfoService {
 		// Cluster group metrics.
 		ClusterMetrics metrics = serverClusterGrp.metrics();
 		// Get some metric values.
-		String usedHeap = (metrics.getHeapMemoryUsed() /(1024 * 1024)) + "";
+		String usedHeap = (metrics.getHeapMemoryUsed() / (1024 * 1024)) + "";
 		String numberOfCores = metrics.getTotalCpus() + "";
 		String activeJobs = metrics.getCurrentActiveJobs() + "";
 		dlcSystemInfo.setUsedHeap(usedHeap);
