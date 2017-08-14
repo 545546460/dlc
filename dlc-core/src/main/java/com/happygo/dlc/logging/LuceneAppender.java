@@ -30,7 +30,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.search.NumericRangeQuery;
 
@@ -172,7 +172,7 @@ public class LuceneAppender extends AbstractAppender {
 		if ((writerSize == 0) || (writerSize == 1)) {
 			if (null == writerMap.get(target)) {
 				writerMap.putIfAbsent(target, LuceneIndexWriter.indexWriter(
-						new KeywordAnalyzer(), this.target));
+						new CJKAnalyzer(), this.target));
 			}
 			return writerMap.get(target);
 		}
