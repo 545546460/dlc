@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>com.happygo.dlc</groupId>
 			<artifactId>dlc-core</artifactId>
-			<version>1.1.1</version>
+			<version>1.2.0</version>
 		</dependency>
 
 		<!-- 如果项目中使用的h2为其他版本，ignite无法启动，修改h2 jar为1.4.191版本-->
