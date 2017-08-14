@@ -19,6 +19,7 @@ import com.happgo.dlc.base.util.Assert;
 import com.happgo.dlc.base.util.Strings;
 import com.happygo.dlc.lucene.DocumentUtils;
 import com.happygo.dlc.lucene.LuceneIndexWriter;
+
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -29,7 +30,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.search.NumericRangeQuery;
 
@@ -37,25 +38,28 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
  * ClassName:LuceneAppender
- * 
+ *
  * @Description: LuceneAppender.java
  * @author sxp (1378127237@qq.com)
  * @date:2017年5月30日 上午7:39:31
- * 
+ *
  * <Lucene name="luceneAppender" ignoreExceptions="true" target="target/lucene/index" expiryTime="1296000">
  *      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
  *      <IndexField name="logId" pattern="$${ctx:logId}" />
- *      <IndexField name="time" pattern="%d{UNIX_MILLIS}" type = "LongField"/> 
+ *      <IndexField name="time" pattern="%d{UNIX_MILLIS}" type = "LongField"/>
  *      <IndexField name="level" pattern="%-5level" />
- *      <IndexField name="content" pattern="%class{36} %L %M - %msg%xEx%n" /> 
+ *      <IndexField name="content" pattern="%class{36} %L %M - %msg%xEx%n" />
  * </Lucene>
  */
 
@@ -65,26 +69,31 @@ public class LuceneAppender extends AbstractAppender {
 	 * index directory
 	 */
 	private final String target;
-	
+
 	/**
 	 * Index expiration time (seconds)
 	 */
 	private final Integer expiryTime;
 
 	/**
-	 * LuceneIndexField[] the indexFields 
+	 * LuceneIndexField[] the indexFields
 	 */
 	private final LuceneIndexField[] indexFields;
-	
+
 	/**
 	 * Periodically clear the index and submit the IndexWriter thread pool
 	 */
 	private final ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(2);
-	
+
 	/**
 	 * LuceneIndexWriter corresponding to each index directory.
 	 */
     public static final ConcurrentHashMap<String, LuceneIndexWriter> writerMap = new ConcurrentHashMap<String, LuceneIndexWriter>();
+    
+    /**
+     * List<String> the indexFieldNameList 
+     */
+    public static final List<String> indexFieldNameList = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Constructor com.happygo.dlc.log.LuceneAppender
@@ -103,6 +112,9 @@ public class LuceneAppender extends AbstractAppender {
 		this.target = target;
 		this.expiryTime = expiryTime;
 		this.indexFields = indexFields;
+		//校验必填索引字段
+		validateRequiredIndexFields(indexFields);
+		initIndexFieldNames();
 		//初始化writeMap
 		initLuceneIndexWriter();
 		if (expiryTime != null) {
@@ -111,6 +123,42 @@ public class LuceneAppender extends AbstractAppender {
 		}
 	}
 	
+	/**
+	* @MethodName: initIndexFieldNames
+	* @Description: the getIndexFieldNames
+	*/
+	private void initIndexFieldNames() {
+		for (final LuceneIndexField luceneIndexField : indexFields) {
+			if (!DlcConstants.SYSTEM_NAME.equalsIgnoreCase(luceneIndexField.getName())) {
+				indexFieldNameList.add(luceneIndexField.getName());
+			}
+		}
+	}
+
+	/**
+	 * @MethodName: validateRequiredIndexFields
+	 * @Description: the validateRequiredIndexFields
+	 * @param indexFields
+	 */
+	private void validateRequiredIndexFields(LuceneIndexField[] indexFields) {
+		List<String> nameOfIndexFields = new ArrayList<>(indexFields.length);
+		for (final LuceneIndexField luceneIndexField : indexFields) {
+			nameOfIndexFields.add(luceneIndexField.getName());
+		}
+		boolean requiredFieldOfContent = (nameOfIndexFields.indexOf(DlcConstants.DLC_CONTENT) == -1);
+		if (requiredFieldOfContent) {
+			throw new DLCException("LuceneIndexField '" + DlcConstants.DLC_CONTENT + "' is required!");
+		}
+		boolean requiredFieldOfSystemName = (nameOfIndexFields.indexOf(DlcConstants.SYSTEM_NAME) == -1);
+		if (requiredFieldOfSystemName) {
+			throw new DLCException("LuceneIndexField '" + DlcConstants.SYSTEM_NAME + "' is required!");
+		}
+		boolean requiredFieldOfTime = (nameOfIndexFields.indexOf(DlcConstants.DLC_TIME) == -1);
+		if (requiredFieldOfTime) {
+			throw new DLCException("LuceneIndexField '" + DlcConstants.DLC_TIME + "' is required!");
+		}
+	}
+
 	/**
 	* @MethodName: initLuceneIndexWriter
 	* @Description: the initLuceneIndexWriter
@@ -124,13 +172,13 @@ public class LuceneAppender extends AbstractAppender {
 		if ((writerSize == 0) || (writerSize == 1)) {
 			if (null == writerMap.get(target)) {
 				writerMap.putIfAbsent(target, LuceneIndexWriter.indexWriter(
-						new KeywordAnalyzer(), this.target));
+						new CJKAnalyzer(), this.target));
 			}
 			return writerMap.get(target);
 		}
 		throw new DLCException("lucene index store path must be only one!");
 	}
-	
+
 	/**
 	* @MethodName: registerClearTimer
 	* @Description: the registerClearTimer
@@ -212,7 +260,7 @@ public class LuceneAppender extends AbstractAppender {
 		indexWriter.addDocument(doc);
 		indexWriter.commit();
 	}
-	
+
 	/**
 	* @MethodName: newBuilder
 	* @Description: the newBuilder
@@ -226,7 +274,7 @@ public class LuceneAppender extends AbstractAppender {
 	/**
 	 * ClassName:Builder
 	 * @Description: LuceneAppender.java
-	 * @author sxp (1378127237@qq.com) 
+	 * @author sxp (1378127237@qq.com)
 	 * @date:2017年5月30日 下午6:16:50
 	 */
 	public static class Builder<B extends Builder<B>> extends
@@ -234,20 +282,20 @@ public class LuceneAppender extends AbstractAppender {
 			org.apache.logging.log4j.core.util.Builder<LuceneAppender> {
 
 		/**
-		 * LuceneIndexField[] the indexField 
+		 * LuceneIndexField[] the indexField
 		 */
 		@PluginElement("IndexField")
 		@Required(message = "No IndexField provided")
 		private LuceneIndexField[] indexField;
 
 		/**
-		 * Integer the expiryTime 
+		 * Integer the expiryTime
 		 */
 		@PluginBuilderAttribute
 		private Integer expiryTime;
 
 		/**
-		 * String the target 
+		 * String the target
 		 */
 		@PluginBuilderAttribute
 		@Required(message = "No target provided")

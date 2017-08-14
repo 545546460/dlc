@@ -65,6 +65,11 @@ public final class LuceneIndexSearcher {
 	 * Directory the directory
 	 */
 	private Directory directory;
+	
+	/**
+	 * DirectoryReader the iDirectoryReader 
+	 */
+	private DirectoryReader iDirectoryReader;
 
 	/**
 	 * Constructor com.happygo.dlc.lucene.LuceneIndexSearcher
@@ -77,7 +82,7 @@ public final class LuceneIndexSearcher {
 
 		try {
 			directory = FSDirectory.open(Paths.get(dirPath));
-			DirectoryReader iDirectoryReader = DirectoryReader.open(directory);
+			this.iDirectoryReader = DirectoryReader.open(directory);
 			indexSearcher = new IndexSearcher(iDirectoryReader);
 		} catch (IOException e) {
 			throw new DLCException(e.getMessage(), e);
@@ -95,6 +100,30 @@ public final class LuceneIndexSearcher {
 	public static LuceneIndexSearcher indexSearcher(String dirPath,
 			Analyzer analyzer) {
 		return new LuceneIndexSearcher(dirPath, analyzer);
+	}
+	
+	/**
+	* @MethodName: search
+	* @Description: the search
+	* @param keyWord
+	* @param minTermFreq
+	* @param minDocFreq
+	* @return
+	* @return ScoreDoc[]
+	*/
+	public ScoreDoc[] search(String keyWord, int minTermFreq, int minDocFreq, String preTag,
+			String postTag, int fragmentSize) {
+		Query query = DlcQueryParser.parse(keyWord, minTermFreq, minDocFreq, iDirectoryReader, analyzer);
+		SortField sortField = new SortField(DlcConstants.DLC_TIME, 
+				SortField.Type.LONG, true);
+		Sort sort = new Sort(sortField);
+		ScoreDoc[] scoreDocs = null;
+		try {
+			scoreDocs = indexSearcher.search(query, Integer.MAX_VALUE, sort).scoreDocs;
+		} catch (IOException e) {
+			throw new DLCException(e.getMessage(), e);
+		}
+		return scoreDocs;
 	}
 
 	/**

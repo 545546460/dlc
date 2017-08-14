@@ -8,7 +8,7 @@
         </console>
 
         <!-- dlc-core自定义LuceneAppender -->
-        <Lucene name="LuceneAppender" target="/opt/applog/lucene_index">
+        <Lucene name="LuceneAppender" target="F:\lucene_index">
             <IndexField name="level" pattern="%-5level"/>
             <IndexField name="time" pattern="%d{UNIX_MILLIS}" type="LongField"/>
             <IndexField name="content" pattern="%p %c - %m%n"/>

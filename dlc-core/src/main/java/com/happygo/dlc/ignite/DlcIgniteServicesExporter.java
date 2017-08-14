@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.happgo.dlc.base.DLCException;
 import com.happgo.dlc.base.DlcConstants;
+import com.happygo.dlc.ignite.service.DlcQueryConditionServiceImpl;
 
 /**
  * DlcIgniteServicesExporter
@@ -111,6 +112,11 @@ public class DlcIgniteServicesExporter {
 		default:
 			throw new DLCException("The mode '" + mode + "' is not supported!");
 		}
+		
+		// 发布查询条件标签服务集群单例
+		svcs.deployClusterSingleton(DlcConstants.DLC_LOG_QUERY_CONDITION_SERVICE_NAME, 
+				new DlcQueryConditionServiceImpl());
+		
 		LOGGER.info("<<<=== Dlc ignite service deploy successfully ===>>>");
 	}
 }

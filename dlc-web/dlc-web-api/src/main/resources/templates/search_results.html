@@ -40,7 +40,7 @@
                     <small>搜索用时 (${dlcLogResult.searchTime}秒)</small>
 
                     <div class="search-form">
-                        <form action="/dlc/log/query" method="get">
+                        <form action="/dlc/log/query" method="post">
                             <div class="input-group">
                                 <input type="text" placeholder="输入关键字" name="keyWord"
                                        class="form-control input-lg" value="${dlcLogResult.keyWord}"
@@ -49,11 +49,20 @@
                                 <input type="text" name="numPerPage" value="50" hidden/>
                                 <div class="input-group-btn">
                                     <button class="btn btn-lg btn-primary" type="submit">
-                                        搜一搜吧
+                                                                                                              搜一搜吧
                                     </button>
                                 </div>
                             </div>
                         </form>
+                        <!-- 查询字段 -->
+                        <#if (queryConditions?size>0)>
+                        <h5>可选查询字段:</h5>
+                        <ul class="tag-list" style="padding: 0">
+                            <#list queryConditions as queryCondition>
+                                 <li><a href="#"><i class="fa fa-tag"></i> ${queryCondition}</a></li>
+                            </#list>
+                        </ul>
+                        </#if>
                     </div>
                     <#if (dlcLogResult.pageBean.recordList?size>0)>
                         <!-- 分布式日志搜索结果渲染 -->
@@ -66,7 +75,7 @@
 
                                 <h3>
                                     <#if dlcLogBaseResult.content?length gt 256>
-                                        <form id="detail_form" action="/dlc/log/detail" method="get">
+                                        <form id="detail_form" action="/dlc/log/detail" method="post">
                                             <input type="text" name="logDetail" value="${dlcLogBaseResult.content}" hidden>
                                             <a href="javascript:document:detail_form.submit();">
                                                 ${dlcLogBaseResult.content?substring(0, 256)}...
@@ -122,7 +131,7 @@
 	});
     function getwith(to, p) {
         var myForm = document.createElement("form");
-        myForm.method = "get";
+        myForm.method = "post";
         myForm.action = to;
         for (var k in p) {
             var myInput = document.createElement("input");

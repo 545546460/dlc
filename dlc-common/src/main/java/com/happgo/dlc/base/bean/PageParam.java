@@ -13,6 +13,8 @@
  */
 package com.happgo.dlc.base.bean;
 
+import java.io.Serializable;
+
 /**
  * ClassName:PageParam
  * 
@@ -20,7 +22,12 @@ package com.happgo.dlc.base.bean;
  * @author sxp (1378127237@qq.com)
  * @date:2017年7月15日 下午7:11:53
  */
-public class PageParam {
+public class PageParam implements Serializable {
+	/**
+	 * long the serialVersionUID 
+	 */
+	private static final long serialVersionUID = -8170470517544238709L;
+
 	/**
 	 * 默认为第一页.
 	 */
@@ -30,11 +37,6 @@ public class PageParam {
 	 * 默认每页记录数(15).
 	 */
 	public static final int DEFAULT_NUM_PER_PAGE = 15;
-
-	/**
-	 * 最大每页记录数(100).
-	 */
-	public static final int MAX_PAGE_SIZE = 100;
 
 	// 当前页数
 	private int pageNum = DEFAULT_PAGE_NUM;
@@ -49,12 +51,13 @@ public class PageParam {
 	}
 
 	/**
-	 * 带参数的构造函数
-	 * 
+	 * Constructor com.happgo.dlc.base.bean.PageParam
 	 * @param pageNum
 	 * @param numPerPage
+	 * @param totalCount
+	 * @param totalPage
 	 */
-	public PageParam(int pageNum, int numPerPage) {
+	public PageParam(int pageNum, int numPerPage, int totalCount, int totalPage) {
 		this.pageNum = pageNum;
 		this.numPerPage = numPerPage;
 	}

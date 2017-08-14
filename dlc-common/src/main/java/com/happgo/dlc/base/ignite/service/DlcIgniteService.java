@@ -31,11 +31,10 @@ public interface DlcIgniteService {
 	 *
 	 * @param keyWord   the key word
 	 * @param appName   the app name
-	 * @param queryMode the query mode
 	 * @return List<DlcLog>  list
 	 * @MethodName: logQuery
 	 * @Description: the logQuery
 	 */
-	List<DlcLog> logQuery(String keyWord, String appName, String queryMode);
+	List<DlcLog> logQuery(String keyWord, String appName);
 
 }

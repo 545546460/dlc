@@ -13,11 +13,9 @@
  */
 package com.happygo.dlc.ignite.service;
 
-import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.ignite.service.DlcIgniteService;
 import com.happygo.dlc.ignite.task.DlcKeywordSearchTask;
-import com.happygo.dlc.ignite.task.DlcMoreLikeThisSearchTask;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterGroup;
 import org.apache.ignite.cluster.ClusterGroupEmptyException;
@@ -59,12 +57,9 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	 * logQuery
 	 * @param keyWord
 	 */
-	public List<DlcLog> logQuery(String keyWord, String appName, String queryMode) {
+	public List<DlcLog> logQuery(String keyWord, String appName) {
 		try {
 			ClusterGroup workers = ignite.cluster().forAttribute("ROLE", appName);
-			if (DlcConstants.DLC_MORE_LIKE_THIS_QUERY_MODE.equals(queryMode)) {
-				return ignite.compute(workers).execute(DlcMoreLikeThisSearchTask.class, keyWord);
-			}
 			return ignite.compute(workers).execute(DlcKeywordSearchTask.class, keyWord);
 		} catch (ClusterGroupEmptyException e) {
 			LOGEER.warn("Not find cluster nodes of appName:[" + appName + "]!");

@@ -13,6 +13,17 @@
  */
 package com.happygo.dlc.api.controller;
 
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.bean.PageParam;
@@ -21,13 +32,6 @@ import com.happygo.dlc.biz.service.LogSourceService;
 import com.happygo.dlc.common.entity.DlcLogResult;
 import com.happygo.dlc.common.entity.LogSource;
 import com.happygo.dlc.common.entity.helper.DlcLogResultHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
 
 /**
  * ClassName:DlcLogQueryController
@@ -63,7 +67,7 @@ public class DlcLogQueryController {
 	 * @param keyWord
 	 * @return String
 	 */
-	@GetMapping(value = "/log/query")
+	@PostMapping(value = "/log/query")
 	public ModelAndView logQuery(
 			@RequestParam(value = "keyWord") String keyWord, PageParam pageParam) {
 		LOGGER.info("^------- DLC 日志查询开始，keyWord:[" + keyWord + "] -------^");
@@ -83,7 +87,9 @@ public class DlcLogQueryController {
 		long searchTime = endTime - startTime;
 		DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
 				keyWord, searchTime, queryDlcLogs, pageParam);
+		List<String> queryConditions = dlcLogQueryService.getQueryConditions(appName);
 		modelAndView.addObject("dlcLogResult", dlcLogResult);
+		modelAndView.addObject("queryConditions", queryConditions);
 		LOGGER.info("^------- DLC 日志查询结束  -------^");
 		return modelAndView;
 	}
@@ -94,7 +100,7 @@ public class DlcLogQueryController {
 	* @param logDetail
 	* @return ModelAndView
 	*/
-	@GetMapping(value = "/log/detail")
+	@PostMapping(value = "/log/detail")
 	public ModelAndView logDetail(@RequestParam("logDetail")String logDetail) {
 		ModelAndView modelAndView = new ModelAndView("search_results_detail");
 		modelAndView.addObject("logDetail", logDetail);

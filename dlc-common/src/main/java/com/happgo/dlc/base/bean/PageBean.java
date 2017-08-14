@@ -15,7 +15,6 @@ package com.happgo.dlc.base.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * ClassName:PageBean
@@ -39,15 +38,6 @@ public class PageBean<T> {
 
 	// 总页数
 	private int totalPage;
-
-	// 页码列表的开始索引（包含）
-	private int beginPageIndex;
-
-	// 页码列表的结束索引（包含）
-	private int endPageIndex;
-
-	// 当前分页条件下的统计结果
-	private Map<String, Object> countResultMap;
 
 	/**
 	 * Constructor com.happgo.dlc.base.bean.PageBean
@@ -107,25 +97,6 @@ public class PageBean<T> {
 	}
 
 	/**
-	 * 校验页面输入的每页记录数numPerPage是否合法 .<br/>
-	 * 1、当页面输入的每页记录数numPerPage大于允许的最大每页记录数MAX_PAGE_SIZE时，返回MAX_PAGE_SIZE.
-	 * 2、如果numPerPage小于1，则返回默认的每页记录数DEFAULT_PAGE_SIZE.
-	 * 
-	 * @param numPerPage
-	 *            页面输入的每页记录数 .
-	 * @return checkNumPerPage .
-	 */
-	public static int checkNumPerPage(int numPerPage) {
-		if (numPerPage > PageParam.MAX_PAGE_SIZE) {
-			return PageParam.MAX_PAGE_SIZE;
-		} else if (numPerPage < 1) {
-			return PageParam.DEFAULT_NUM_PER_PAGE;
-		} else {
-			return numPerPage;
-		}
-	}
-
-	/**
 	 * 只接受前4个必要的属性，会自动的计算出其他3个属生的值
 	 * 
 	 * @param currentPage
@@ -142,70 +113,6 @@ public class PageBean<T> {
 
 		// 计算总页码
 		totalPage = (totalCount + numPerPage - 1) / numPerPage;
-
-		// 计算 beginPageIndex 和 endPageIndex
-		if (totalPage <= 10) {
-			// 如果总页数不多于10页，则全部显示
-			beginPageIndex = 1;
-			endPageIndex = totalPage;
-		} else {
-			// 如果总页数多于10页，则显示当前页附近的共10个页码
-			// 当前页附近的共10个页码（前4个 + 当前页 + 后5个）
-			beginPageIndex = currentPage - 4;
-			endPageIndex = currentPage + 5;
-			// 当前面的页码不足4个时，则显示前10个页码
-			if (beginPageIndex < 1) {
-				beginPageIndex = 1;
-				endPageIndex = 10;
-			}
-			// 当后面的页码不足5个时，则显示后10个页码
-			if (endPageIndex > totalPage) {
-				endPageIndex = totalPage;
-				beginPageIndex = totalPage - 10 + 1;
-			}
-		}
-	}
-
-	/**
-	 * 只接受前5个必要的属性，会自动的计算出其他3个属生的值
-	 * 
-	 * @param currentPage
-	 * @param numPerPage
-	 * @param totalCount
-	 * @param recordList
-	 */
-	public PageBean(int currentPage, int numPerPage, int totalCount,
-			List<T> recordList, Map<String, Object> countResultMap) {
-		this.currentPage = currentPage;
-		this.numPerPage = numPerPage;
-		this.totalCount = totalCount;
-		this.recordList = recordList;
-		this.countResultMap = countResultMap;
-
-		// 计算总页码
-		totalPage = (totalCount + numPerPage - 1) / numPerPage;
-
-		// 计算 beginPageIndex 和 endPageIndex
-		if (totalPage <= 10) {
-			// 如果总页数不多于10页，则全部显示
-			beginPageIndex = 1;
-			endPageIndex = totalPage;
-		} else {
-			// 如果总页数多于10页，则显示当前页附近的共10个页码
-			// 当前页附近的共10个页码（前4个 + 当前页 + 后5个）
-			beginPageIndex = currentPage - 4;
-			endPageIndex = currentPage + 5;
-			// 当前面的页码不足4个时，则显示前10个页码
-			if (beginPageIndex < 1) {
-				beginPageIndex = 1;
-				endPageIndex = 10;
-			}
-			// 当后面的页码不足5个时，则显示后10个页码
-			if (endPageIndex > totalPage) {
-				endPageIndex = totalPage;
-				beginPageIndex = totalPage - 10 + 1;
-			}
-		}
 	}
 
 	public List<T> getRecordList() {
@@ -246,29 +153,5 @@ public class PageBean<T> {
 
 	public void setTotalCount(int totalCount) {
 		this.totalCount = totalCount;
-	}
-
-	public int getBeginPageIndex() {
-		return beginPageIndex;
-	}
-
-	public void setBeginPageIndex(int beginPageIndex) {
-		this.beginPageIndex = beginPageIndex;
-	}
-
-	public int getEndPageIndex() {
-		return endPageIndex;
-	}
-
-	public void setEndPageIndex(int endPageIndex) {
-		this.endPageIndex = endPageIndex;
-	}
-
-	public Map<String, Object> getCountResultMap() {
-		return countResultMap;
-	}
-
-	public void setCountResultMap(Map<String, Object> countResultMap) {
-		this.countResultMap = countResultMap;
 	}
 }

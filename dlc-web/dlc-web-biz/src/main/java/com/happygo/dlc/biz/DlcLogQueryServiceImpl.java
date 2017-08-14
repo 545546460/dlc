@@ -22,6 +22,10 @@ import javax.annotation.PostConstruct;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.cluster.ClusterGroup;
+import org.apache.ignite.cluster.ClusterGroupEmptyException;
+import org.apache.ignite.lang.IgniteCallable;
+import org.apache.ignite.resources.ServiceResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +34,16 @@ import org.springframework.stereotype.Service;
 import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.bean.PageParam;
+import com.happgo.dlc.base.ignite.service.DlcQueryConditionService;
 import com.happgo.dlc.base.util.CollectionUtils;
 import com.happygo.dlc.biz.service.DlcLogQueryService;
 import com.happygo.dlc.dal.callback.DlcLogQueryCallback;
 
 /**
- * The type Dlc log query service.
+ * ClassName:DlcLogQueryServiceImpl
+ * @Description: DlcLogQueryServiceImpl.java
+ * @author sxp (1378127237@qq.com) 
+ * @date:2017年7月13日 下午1:16:26
  */
 @Service
 public class DlcLogQueryServiceImpl implements DlcLogQueryService {
@@ -75,7 +83,8 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
      */
     public List<List<DlcLog>> logQuery(String keyWord, String appName, PageParam pageParam) {
         //1.根据key在IgniteCache查询是否有缓存，如果有直接返回，否则继续第二步
-        List<List<DlcLog>> splitLogQueryDlcLogs = igniteCache.get(keyWord);
+        String igniteCacheKey = keyWord + "@" + appName;
+        List<List<DlcLog>> splitLogQueryDlcLogs = igniteCache.get(igniteCacheKey);
         if (splitLogQueryDlcLogs != null && !splitLogQueryDlcLogs.isEmpty()) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("get keyword[" + keyWord + "] dlc log from ignite cache");
@@ -85,16 +94,9 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 
         int partitionSize = pageParam.getNumPerPage();
 
-        //2.根据keyword关键字匹配，如果没有匹配到，继续第三步
-        List<DlcLog> logQueryDlcLogs = broadcastLogQuery(keyWord, appName, null);
-        splitLogQueryDlcLogs = splitLogAndPutInCache(keyWord, partitionSize, logQueryDlcLogs);
-        if (!org.springframework.util.CollectionUtils.isEmpty(splitLogQueryDlcLogs)) {
-            return splitLogQueryDlcLogs;
-        }
-
-        //3.根据keyword进行相似度查询
-        logQueryDlcLogs = broadcastLogQuery(keyWord, appName, DlcConstants.DLC_MORE_LIKE_THIS_QUERY_MODE);
-        splitLogQueryDlcLogs = splitLogAndPutInCache(keyWord, partitionSize, logQueryDlcLogs);
+        //2.根据keyword关键字匹配
+        List<DlcLog> logQueryDlcLogs = broadcastLogQuery(keyWord, appName);
+        splitLogQueryDlcLogs = splitLogAndPutInCache(igniteCacheKey, partitionSize, logQueryDlcLogs);
         return splitLogQueryDlcLogs;
     }
 
@@ -102,12 +104,11 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
      * @MethodName: broadcastLogQuery
      * @Description: the broadcastLogQuery
      * @param keyWord
-     * @param queryMode
      * @return List<DlcLog>
      */
-    private List<DlcLog> broadcastLogQuery(String keyWord, String appName, String queryMode) {
+    private List<DlcLog> broadcastLogQuery(String keyWord, String appName) {
         Collection<List<DlcLog>> logQueryResults = ignite.compute().broadcast(
-                new DlcLogQueryCallback(keyWord, appName, queryMode));
+                new DlcLogQueryCallback(keyWord, appName));
         if (logQueryResults == null) {
             return null;
         }
@@ -122,24 +123,61 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
     /**
      * @MethodName: splitLogAndPutInCache
      * @Description: the splitLogAndPutInCache
-     * @param keyWord
+     * @param igniteCacheKey
      * @param partitionSize
      * @param logQueryDlcLogs
      * @return List<List<DlcLog>>
      */
-    private List<List<DlcLog>> splitLogAndPutInCache(String keyWord, int partitionSize,
+    private List<List<DlcLog>> splitLogAndPutInCache(String igniteCacheKey, int partitionSize,
                                                      List<DlcLog> logQueryDlcLogs) {
         if (logQueryDlcLogs.isEmpty()) {
             return null;
         }
         List<List<DlcLog>> splitLogQueryDlcLogs = CollectionUtils.split(logQueryDlcLogs, partitionSize);
-        boolean isSuccess = igniteCache.replace(keyWord, splitLogQueryDlcLogs);
+        boolean isSuccess = igniteCache.replace(igniteCacheKey, splitLogQueryDlcLogs);
         if (!isSuccess) {
-            igniteCache.put(keyWord, splitLogQueryDlcLogs);
+            igniteCache.put(igniteCacheKey, splitLogQueryDlcLogs);
         }
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("keyword[" + keyWord + "] dlc log put ignite cache");
+            LOGGER.debug("keyword[" + igniteCacheKey + "] dlc log put ignite cache");
         }
         return splitLogQueryDlcLogs;
     }
+
+	/* (non-Javadoc)
+	 * @see com.happygo.dlc.biz.service.DlcLogQueryService#getQueryConditions(java.lang.String)
+	 */
+	@Override
+	public List<String> getQueryConditions(String appName) {
+		try {
+			ClusterGroup clsGroup = ignite.cluster().forAttribute("ROLE", appName);
+			List<String> queryConditions = ignite.compute(clsGroup).call(
+					new IgniteCallable<List<String>>() {
+						/**
+						 * long the serialVersionUID
+						 */
+						private static final long serialVersionUID = 1L;
+
+						/**
+						 * DlcQueryConditionService the queryConditionService
+						 */
+						@ServiceResource(serviceName = DlcConstants.DLC_LOG_QUERY_CONDITION_SERVICE_NAME, proxyInterface = DlcQueryConditionService.class)
+						private DlcQueryConditionService queryConditionService;
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see java.util.concurrent.Callable#call()
+						 */
+						@Override
+						public List<String> call() throws Exception {
+							return queryConditionService.getQueryConditions();
+						}
+					});
+			return queryConditions;
+		} catch (ClusterGroupEmptyException ex) {
+			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
+			return new ArrayList<>(0);
+		}
+	}
 }
