@@ -125,6 +125,7 @@ public class Log4jLuceneAppender extends AppenderSkeleton {
     public void activateOptions() {
         //校验必填索引字段
         validateParams();
+        initIndexFieldNames();
 		LuceneAppenderInitializer.init(target, expiryTime, writerMap, scheduledExecutor);
     }
     
@@ -133,9 +134,9 @@ public class Log4jLuceneAppender extends AppenderSkeleton {
     * @Description: the initIndexFieldNames
     */
     protected void initIndexFieldNames() {
-    	indexFieldNameList.add(DlcConstants.SYSTEM_NAME);
-    	indexFieldNameList.add(DlcConstants.DLC_CONTENT);
     	indexFieldNameList.add(DlcConstants.DLC_LEVEL);
+    	indexFieldNameList.add(DlcConstants.DLC_TIME);
+    	indexFieldNameList.add(DlcConstants.DLC_CONTENT);
     }
 
     /**
