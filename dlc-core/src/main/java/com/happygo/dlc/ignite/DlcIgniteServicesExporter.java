@@ -13,13 +13,12 @@
  */
 package com.happygo.dlc.ignite;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteServices;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.services.Service;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.happgo.dlc.base.DLCException;
 import com.happgo.dlc.base.DlcConstants;
 import com.happygo.dlc.ignite.service.DlcQueryConditionServiceImpl;
@@ -51,8 +50,8 @@ public class DlcIgniteServicesExporter {
 	/**
 	 * The LOOGER
 	 */
-	private static final Logger LOGGER = LogManager.getLogger(DlcIgniteServicesExporter.class);
-
+	private static final Log LOGGER = LogFactory.getLog(DlcIgniteServicesExporter.class);
+	
 	static {
 		ignite = Ignition.start("config/dlc-ignite.xml");
 	}

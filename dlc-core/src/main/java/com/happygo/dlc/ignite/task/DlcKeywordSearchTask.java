@@ -20,14 +20,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.compute.ComputeJob;
 import org.apache.ignite.compute.ComputeJobAdapter;
 import org.apache.ignite.compute.ComputeJobResult;
 import org.apache.ignite.compute.ComputeTaskAdapter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.Document;
@@ -37,7 +37,7 @@ import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.util.CollectionUtils;
 import com.happgo.dlc.base.util.Strings;
-import com.happygo.dlc.logging.LuceneAppender;
+import com.happygo.dlc.logging.util.DlcLogUtils;
 import com.happygo.dlc.lucene.LuceneIndexSearcher;
 import com.happygo.dlc.lucene.LuceneIndexWriter;
 
@@ -58,7 +58,7 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
     /**
      * The field LOGEER
      */
-    private static final Logger LOGEER = LogManager.getLogger(DlcKeywordSearchTask.class);
+	private static final Log LOGGER = LogFactory.getLog(DlcKeywordSearchTask.class);
 
     /**
      * map
@@ -72,7 +72,7 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
             List<ClusterNode> subgrid, final String keyWord)
             throws IgniteException {
         Map<ComputeJob, ClusterNode> map = new HashMap<>();
-        Map<String, LuceneIndexWriter> writeMap = LuceneAppender.writerMap;
+        Map<String, LuceneIndexWriter> writeMap = DlcLogUtils.getWriteMap();
         Map.Entry<String, LuceneIndexWriter> entry = CollectionUtils.getFirstEntry(writeMap);
         final String targetPath = entry.getKey();
         //如果索引文件夹不存在，直接返回
@@ -89,8 +89,8 @@ public class DlcKeywordSearchTask extends ComputeTaskAdapter<String, List<DlcLog
 
             @Override
             public Object execute() {
-                if (LOGEER.isDebugEnabled()) {
-                    LOGEER.info(">>> Search keyWord '" + keyWord
+                if (LOGGER.isDebugEnabled()) {
+                	LOGGER.info(">>> Search keyWord '" + keyWord
                             + "' on this node from target path '" + targetPath
                             + "'");
                 }

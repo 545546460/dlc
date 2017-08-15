@@ -42,7 +42,7 @@
         <!-- set cluster node attributes-->
         <property name="userAttributes">
             <map>
-                <entry key="ROLE" value="dlc-example"/>
+                <entry key="ROLE" value="demo-log4j2"/>
             </map>
         </property>
 
