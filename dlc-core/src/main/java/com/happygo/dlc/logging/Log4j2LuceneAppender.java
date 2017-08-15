@@ -103,7 +103,7 @@ public class Log4j2LuceneAppender extends AbstractAppender {
 	 */
 	protected Log4j2LuceneAppender(String name, boolean ignoreExceptions,
 			Filter filter, Layout<? extends Serializable> layout,
-			String target, Integer expiryTime, LuceneIndexField[] indexFields) {
+			String target, long expiryTime, LuceneIndexField[] indexFields) {
 		super(name, filter, layout, ignoreExceptions);
 		this.target = target;
 		this.expiryTime = expiryTime;
@@ -231,7 +231,7 @@ public class Log4j2LuceneAppender extends AbstractAppender {
 		 * Integer the expiryTime
 		 */
 		@PluginBuilderAttribute
-		private Integer expiryTime;
+		private long expiryTime;
 
 		/**
 		 * String the target
@@ -257,7 +257,7 @@ public class Log4j2LuceneAppender extends AbstractAppender {
 		* @param expiryTime
 		* @return B
 		*/
-		public B withExpiryTime(final Integer expiryTime) {
+		public B withExpiryTime(final long expiryTime) {
 			this.expiryTime = expiryTime;
 			return this.asBuilder();
 		}
