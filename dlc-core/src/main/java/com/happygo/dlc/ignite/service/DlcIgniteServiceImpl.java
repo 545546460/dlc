@@ -16,15 +16,15 @@ package com.happygo.dlc.ignite.service;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.ignite.service.DlcIgniteService;
 import com.happygo.dlc.ignite.task.DlcKeywordSearchTask;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterGroup;
 import org.apache.ignite.cluster.ClusterGroupEmptyException;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.services.Service;
 import org.apache.ignite.services.ServiceContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	/** 
 	* The field LOGEER
 	*/
-	private static final Logger LOGEER = LogManager.getLogger(DlcIgniteServiceImpl.class);
+	private static final Log LOGGER = LogFactory.getLog(DlcIgniteServiceImpl.class);
 	
 	/** 
 	* The field ignite
@@ -62,7 +62,7 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 			ClusterGroup workers = ignite.cluster().forAttribute("ROLE", appName);
 			return ignite.compute(workers).execute(DlcKeywordSearchTask.class, keyWord);
 		} catch (ClusterGroupEmptyException e) {
-			LOGEER.warn("Not find cluster nodes of appName:[" + appName + "]!");
+			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
 			return new ArrayList<>(0);
 		}
 	}
@@ -73,7 +73,7 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	* @see org.apache.ignite.services.Service#cancel(org.apache.ignite.services.ServiceContext)
 	*/
 	public void cancel(ServiceContext ctx) {
-		LOGEER.info("Service was cancel: " + ctx.name());
+		LOGGER.info("Service was cancel: " + ctx.name());
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	* @see org.apache.ignite.services.Service#init(org.apache.ignite.services.ServiceContext)
 	*/
 	public void init(ServiceContext ctx) throws Exception {
-		LOGEER.info("Service was initialized: " + ctx.name());
+		LOGGER.info("Service was initialized: " + ctx.name());
 	}
 
 	/**
@@ -93,6 +93,6 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	* @see org.apache.ignite.services.Service#execute(org.apache.ignite.services.ServiceContext)
 	*/
 	public void execute(ServiceContext ctx) throws Exception {
-		LOGEER.info("Executing distributed service: " + ctx.name());
+		LOGGER.info("Executing distributed service: " + ctx.name());
 	}
 }

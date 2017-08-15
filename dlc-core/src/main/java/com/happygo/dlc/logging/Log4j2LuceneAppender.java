@@ -6,8 +6,8 @@
  * Created  on  2017年5月30日 上午7:39:31
  *
  * @Package com.happygo.dlc.log  
- * @Title: LuceneAppender.java
- * @Description: LuceneAppender.java
+ * @Title: Log4j2LuceneAppender.java
+ * @Description: Log4j2LuceneAppender.java
  * @author sxp (1378127237@qq.com) 
  * @version 1.0.0 
  */
@@ -30,16 +30,12 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
-import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.*;
-import org.apache.lucene.search.NumericRangeQuery;
 
-import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -48,9 +44,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ClassName:LuceneAppender
+ * ClassName:Log4j2LuceneAppender
  *
- * @Description: LuceneAppender.java
+ * @Description: Log4j2LuceneAppender.java
  * @author sxp (1378127237@qq.com)
  * @date:2017年5月30日 上午7:39:31
  *
@@ -64,7 +60,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Plugin(name = "Lucene", category = "Core", elementType = "appender", printObject = true)
-public class LuceneAppender extends AbstractAppender {
+public class Log4j2LuceneAppender extends AbstractAppender {
 	/**
 	 * index directory
 	 */
@@ -73,7 +69,7 @@ public class LuceneAppender extends AbstractAppender {
 	/**
 	 * Index expiration time (seconds)
 	 */
-	private final Integer expiryTime;
+	private final long expiryTime;
 
 	/**
 	 * LuceneIndexField[] the indexFields
@@ -105,7 +101,7 @@ public class LuceneAppender extends AbstractAppender {
 	 * @param expiryTime
 	 * @param indexFields
 	 */
-	protected LuceneAppender(String name, boolean ignoreExceptions,
+	protected Log4j2LuceneAppender(String name, boolean ignoreExceptions,
 			Filter filter, Layout<? extends Serializable> layout,
 			String target, Integer expiryTime, LuceneIndexField[] indexFields) {
 		super(name, filter, layout, ignoreExceptions);
@@ -115,12 +111,7 @@ public class LuceneAppender extends AbstractAppender {
 		//校验必填索引字段
 		validateRequiredIndexFields(indexFields);
 		initIndexFieldNames();
-		//初始化writeMap
-		initLuceneIndexWriter();
-		if (expiryTime != null) {
-			//注册定时清理过期索引文件定时器
-			registerClearTimer();
-		}
+		LuceneAppenderInitializer.init(target, this.expiryTime, writerMap, scheduledExecutor);
 	}
 	
 	/**
@@ -159,58 +150,6 @@ public class LuceneAppender extends AbstractAppender {
 		}
 	}
 
-	/**
-	* @MethodName: initLuceneIndexWriter
-	* @Description: the initLuceneIndexWriter
-	* @return LuceneIndexWriter
-	*/
-	private LuceneIndexWriter initLuceneIndexWriter() {
-		if(new File(target).isFile()) {
-			throw new DLCException("Lucene index path must be directory, but target path:'" + target + "' is file!");
-		}
-		int writerSize = writerMap.size();
-		if ((writerSize == 0) || (writerSize == 1)) {
-			if (null == writerMap.get(target)) {
-				writerMap.putIfAbsent(target, LuceneIndexWriter.indexWriter(
-						new CJKAnalyzer(), this.target));
-			}
-			return writerMap.get(target);
-		}
-		throw new DLCException("lucene index store path must be only one!");
-	}
-
-	/**
-	* @MethodName: registerClearTimer
-	* @Description: the registerClearTimer
-	*/
-	private void registerClearTimer() {
-		Calendar calendar = Calendar.getInstance();
-		long curMillis = calendar.getTimeInMillis();
-		calendar.add(Calendar.DAY_OF_MONTH, 1);
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		long difMinutes = (calendar.getTimeInMillis() - curMillis)
-				/ (1000 * 60);
-
-		scheduledExecutor.scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				LOGGER.info("delete index start!", target, expiryTime);
-				LuceneIndexWriter indexWriter = initLuceneIndexWriter();
-				if (null != indexWriter) {
-					Long start = 0L;
-					Long end = System.currentTimeMillis() - expiryTime * 1000;
-					NumericRangeQuery<Long> rangeQuery = NumericRangeQuery
-							.newLongRange("timestamp", start, end, true, true);
-					indexWriter.deleteDocuments(rangeQuery);
-					indexWriter.commit();
-					LOGGER.info("delete index end! ", target, expiryTime);
-				}
-			}
-		}, difMinutes, 1440, TimeUnit.MINUTES);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -223,7 +162,7 @@ public class LuceneAppender extends AbstractAppender {
 			return;
 		}
 
-		LuceneIndexWriter indexWriter = initLuceneIndexWriter();
+		LuceneIndexWriter indexWriter = LuceneAppenderInitializer.initLuceneIndexWriter(target, writerMap);
 		Assert.isNull(indexWriter);
 		Document doc = new Document();
 		doc.add(new LongField("timestamp", event.getTimeMillis(),
@@ -279,7 +218,7 @@ public class LuceneAppender extends AbstractAppender {
 	 */
 	public static class Builder<B extends Builder<B>> extends
 			AbstractAppender.Builder<B> implements
-			org.apache.logging.log4j.core.util.Builder<LuceneAppender> {
+			org.apache.logging.log4j.core.util.Builder<Log4j2LuceneAppender> {
 
 		/**
 		 * LuceneIndexField[] the indexField
@@ -337,8 +276,8 @@ public class LuceneAppender extends AbstractAppender {
 		/* (non-Javadoc)
 		 * @see org.apache.logging.log4j.core.util.Builder#build()
 		 */
-		public LuceneAppender build() {
-			return new LuceneAppender(getName(), isIgnoreExceptions(),
+		public Log4j2LuceneAppender build() {
+			return new Log4j2LuceneAppender(getName(), isIgnoreExceptions(),
 					getFilter(), this.getLayout(), this.target,
 					this.expiryTime, this.indexField);
 		}
