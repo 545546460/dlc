@@ -48,9 +48,9 @@ demo:https://github.com/xiapshen/dlc/tree/master/exmple/dlc-example
 答：修改h2 jar为1.4.191版本
 ```
 <dependency>
-	<groupId>com.happygo.dlc</groupId>
-	<artifactId>dlc-core</artifactId>
-	<version>1.1.1</version>
+     <groupId>com.h2database</groupId>
+     <artifactId>h2</artifactId>
+     <version>1.4.191</version>
 </dependency>
 ```
 
