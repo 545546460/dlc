@@ -38,7 +38,6 @@ import com.happgo.dlc.base.ignite.service.DlcQueryConditionService;
 import com.happgo.dlc.base.util.CollectionUtils;
 import com.happygo.dlc.biz.service.DlcLogQueryService;
 import com.happygo.dlc.dal.callback.DlcLogQueryCallback;
-
 /**
  * ClassName:DlcLogQueryServiceImpl
  * @Description: DlcLogQueryServiceImpl.java
@@ -107,17 +106,23 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
      * @return List<DlcLog>
      */
     private List<DlcLog> broadcastLogQuery(String keyWord, String appName) {
-        Collection<List<DlcLog>> logQueryResults = ignite.compute().broadcast(
-                new DlcLogQueryCallback(keyWord, appName));
-        if (logQueryResults == null) {
-            return null;
-        }
-        List<DlcLog> logQueryDlcLogs = new ArrayList<DlcLog>();
-        for (Iterator<List<DlcLog>> it = logQueryResults.iterator(); it
-                .hasNext(); ) {
-            logQueryDlcLogs.addAll(it.next());
-        }
-        return logQueryDlcLogs;
+		try {
+			ClusterGroup workers = ignite.cluster().forAttribute("ROLE", appName);
+			Collection<List<DlcLog>> logQueryResults = ignite.compute(workers).broadcast(
+					new DlcLogQueryCallback(keyWord, appName));
+			if (logQueryResults == null) {
+				return null;
+			}
+			List<DlcLog> logQueryDlcLogs = new ArrayList<DlcLog>();
+			for (Iterator<List<DlcLog>> it = logQueryResults.iterator(); it
+					.hasNext(); ) {
+				logQueryDlcLogs.addAll(it.next());
+			}
+			return logQueryDlcLogs;
+		} catch (ClusterGroupEmptyException e) {
+			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
+			return new ArrayList<>(0);
+		}
     }
 
     /**

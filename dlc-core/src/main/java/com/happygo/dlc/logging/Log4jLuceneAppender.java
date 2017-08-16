@@ -9,7 +9,12 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.apache.lucene.document.*;
+import org.apache.log4j.spi.ThrowableInformation;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.NumericDocValuesField;
+import org.apache.lucene.document.TextField;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -125,18 +130,19 @@ public class Log4jLuceneAppender extends AppenderSkeleton {
     public void activateOptions() {
         //校验必填索引字段
         validateParams();
-        initIndexFieldNames();
+        initIndexFieldAndSetSystemProp();
 		LuceneAppenderInitializer.init(target, expiryTime, writerMap, scheduledExecutor);
     }
     
     /**
-    * @MethodName: initIndexFieldNames
+    * @MethodName: initIndexFieldAndSetSystemProp
     * @Description: the initIndexFieldNames
     */
-    protected void initIndexFieldNames() {
+    protected void initIndexFieldAndSetSystemProp() {
     	indexFieldNameList.add(DlcConstants.DLC_LEVEL);
     	indexFieldNameList.add(DlcConstants.DLC_TIME);
     	indexFieldNameList.add(DlcConstants.DLC_CONTENT);
+        System.setProperty("dlc.log.util", "log4j");
     }
 
     /**
@@ -173,6 +179,8 @@ public class Log4jLuceneAppender extends AppenderSkeleton {
         LuceneIndexWriter indexWriter = LuceneAppenderInitializer.initLuceneIndexWriter(target, writerMap);
         Assert.isNull(indexWriter);
         Document doc = new Document();
+    	doc.add(new LongField(DlcConstants.DLC_TIME, event.getTimeStamp(),
+				Field.Store.YES));
         doc.add(new NumericDocValuesField(DlcConstants.DLC_TIME, event.getTimeStamp()));
         try {
             String hostIp = InetAddress.getLocalHost().getHostAddress();
@@ -187,6 +195,15 @@ public class Log4jLuceneAppender extends AppenderSkeleton {
         doc.add(new TextField(DlcConstants.DLC_LEVEL, level,
                 Field.Store.YES));
         String logMsg = this.layout.format(event);
+        ThrowableInformation throwableInformation = event.getThrowableInformation();
+        if (throwableInformation != null) {
+            StackTraceElement[] stackTraceElements = throwableInformation.getThrowable().getStackTrace();
+            StringBuilder stringBuilder = new StringBuilder();
+            for (final StackTraceElement stackTraceElement : stackTraceElements) {
+                stringBuilder.append(stackTraceElement).append("<br/>");
+            }
+            logMsg += stringBuilder.toString();
+        }
         doc.add(new TextField(DlcConstants.DLC_CONTENT, logMsg,
                 Field.Store.YES));
         indexWriter.addDocument(doc);

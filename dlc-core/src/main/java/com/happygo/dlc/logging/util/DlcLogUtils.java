@@ -13,97 +13,83 @@
 */
 package com.happygo.dlc.logging.util;
 
-import java.util.List;
-import java.util.Map;
-
-import com.happgo.dlc.base.util.ClassLoaderUtils;
 import com.happygo.dlc.logging.Log4j2LuceneAppender;
 import com.happygo.dlc.logging.Log4jLuceneAppender;
 import com.happygo.dlc.lucene.LuceneIndexWriter;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * ClassName:DlcLogUtils
+ *
+ * @author sxp (1378127237@qq.com)
  * @Description: DlcLogUtils.java
- * @author sxp (1378127237@qq.com) 
- * @date:2017年8月15日 下午8:13:56
+ * @date:2017年8月15日 下午8 :13:56
  */
 public class DlcLogUtils {
-	
+
 	/**
-	 * List<String> the queryConditions 
+	 * List<String> the queryConditions
 	 */
 	private static List<String> queryConditions;
-	
+
 	/**
-	 * Map<String,LuceneIndexWriter> the writeMap 
+	 * Map<String,LuceneIndexWriter> the writeMap
 	 */
 	private static Map<String, LuceneIndexWriter> writeMap;
-	
+
 	/**
-	 * String[] the LUCENE_APPENDER_TYPE_NAMES 
+	 * The constant LOG4J_TYPE.
 	 */
-	private static final String[] LUCENE_APPENDER_TYPE_NAMES = new String[] {
-		"com.happygo.dlc.logging.Log4jLuceneAppender",
-		"com.happygo.dlc.logging.Log4j2LuceneAppender"};
-	
+	private static final String LOG4J_TYPE = "log4j";
+
+	/**
+	 * The constant LOG4J2_TYPE.
+	 */
+	private static final String LOG4J2_TYPE = "log4j2";
+
 	/**
 	 * Constructor com.happygo.dlc.logging.util.LogUtils
 	 */
 	private DlcLogUtils() {}
-	
+
 	/**
-	* @MethodName: getQueryConditionsFromAppender
-	* @Description: the getQueryConditionsFromAppender
-	* @return List<String>
-	*/
+	 * Gets query conditions from appender.
+	 *
+	 * @return List<String> query conditions from appender
+	 * @MethodName: getQueryConditionsFromAppender
+	 * @Description: the getQueryConditionsFromAppender
+	 */
 	public static List<String> getQueryConditionsFromAppender() {
 		if (queryConditions != null && !queryConditions.isEmpty()) {
 			return queryConditions;
 		}
-		ClassLoader classLoader = ClassLoaderUtils.getDefaultClassLoader();
-		String luceneAppenderName = findType(classLoader);
-		if ("Log4jLuceneAppender".equals(luceneAppenderName)) {
+		String logUtilName = System.getProperty("dlc.log.util");
+		if (LOG4J_TYPE.equals(logUtilName)) {
 			return Log4jLuceneAppender.indexFieldNameList;
-		} else if ("Log4j2LuceneAppender".equals(luceneAppenderName)) {
+		} else if (LOG4J2_TYPE.equals(logUtilName)) {
 			return Log4j2LuceneAppender.indexFieldNameList;
 		}
 		return null;
 	}
-	
+
 	/**
-	* @MethodName: getWriteMap
-	* @Description: the getWriteMap
-	* @return Map<String,LuceneIndexWriter>
-	*/
+	 * Gets write map.
+	 *
+	 * @return Map<String LuceneIndexWriter>
+	 * @MethodName: getWriteMap
+	 * @Description: the getWriteMap
+	 */
 	public static Map<String, LuceneIndexWriter> getWriteMap() {
 		if (writeMap != null && !writeMap.isEmpty()) {
 			return writeMap;
 		}
-		ClassLoader classLoader = ClassLoaderUtils.getDefaultClassLoader();
-		String luceneAppenderName = findType(classLoader);
-		if ("Log4jLuceneAppender".equals(luceneAppenderName)) {
+		String logUtilName = System.getProperty("dlc.log.util");
+		if (LOG4J_TYPE.equals(logUtilName)) {
 			return Log4jLuceneAppender.writerMap;
-		} else if ("Log4j2LuceneAppender".equals(luceneAppenderName)) {
+		} else if (LOG4J2_TYPE.equals(logUtilName)) {
 			return Log4j2LuceneAppender.writerMap;
-		}
-		return null;
-	}
-	
-	/**
-	* @MethodName: findType
-	* @Description: the findType
-	* @param classLoader
-	* @return String
-	*/
-	private static String findType(ClassLoader classLoader) {
-		for (String name : LUCENE_APPENDER_TYPE_NAMES) {
-			try {
-				classLoader.loadClass(name);
-				String luceneAppenderName = name.substring("com.happygo.dlc.logging.".length());
-				return luceneAppenderName;
-			} catch (Exception e) {
-				// ignore exception
-			}
 		}
 		return null;
 	}

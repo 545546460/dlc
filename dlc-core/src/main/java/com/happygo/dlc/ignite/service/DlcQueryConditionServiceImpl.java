@@ -39,11 +39,6 @@ public class DlcQueryConditionServiceImpl implements DlcQueryConditionService,
 	private static final long serialVersionUID = 4057978072875039088L;
 
 	/**
-	 * List<String> the queryConditions
-	 */
-	private static final List<String> queryConditions = DlcLogUtils.getQueryConditionsFromAppender();
-
-	/**
 	 * The field LOGEER
 	 */
 	private static final Log LOGGER = LogFactory.getLog(DlcQueryConditionServiceImpl.class);
@@ -56,7 +51,7 @@ public class DlcQueryConditionServiceImpl implements DlcQueryConditionService,
 	 */
 	@Override
 	public List<String> getQueryConditions() {
-		return queryConditions;
+		return DlcLogUtils.getQueryConditionsFromAppender();
 	}
 
 	/**
