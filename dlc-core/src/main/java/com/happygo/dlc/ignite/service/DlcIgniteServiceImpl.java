@@ -20,12 +20,9 @@ import com.happygo.dlc.ignite.task.DlcKeywordSearchTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ignite.Ignite;
-import org.apache.ignite.cluster.ClusterGroup;
-import org.apache.ignite.cluster.ClusterGroupEmptyException;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.services.Service;
 import org.apache.ignite.services.ServiceContext;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,13 +55,8 @@ public class DlcIgniteServiceImpl implements DlcIgniteService, Service {
 	 * @param keyWord
 	 */
 	public List<DlcLog> logQuery(String keyWord, String appName) {
-		try {
-			ClusterGroup workers = ignite.cluster().forAttribute("ROLE", appName);
-			return ignite.compute(workers).execute(DlcKeywordSearchTask.class, keyWord);
-		} catch (ClusterGroupEmptyException e) {
-			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
-			return new ArrayList<>(0);
-		}
+		DlcKeywordSearchTask keywordSearchTask = new DlcKeywordSearchTask();
+		return keywordSearchTask.keyWordSearch(keyWord);
 	}
 
 	/**

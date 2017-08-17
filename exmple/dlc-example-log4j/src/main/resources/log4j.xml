@@ -11,7 +11,7 @@
 
     <!-- 自定义LuceneAppender -->
 	<appender name="luceneAppender" class="com.happygo.dlc.logging.Log4jLuceneAppender">
-		<param name="Target" value="F:\\lucene_index" />
+		<param name="Target" value="/opt/applog/lucene_index" />
 		<param name="SystemName" value="demo-log4j" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n" />

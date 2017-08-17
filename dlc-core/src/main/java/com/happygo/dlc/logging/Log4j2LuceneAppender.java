@@ -110,20 +110,21 @@ public class Log4j2LuceneAppender extends AbstractAppender {
 		this.indexFields = indexFields;
 		//校验必填索引字段
 		validateRequiredIndexFields(indexFields);
-		initIndexFieldNames();
+		initIndexFieldAndSetSystemProp();
 		LuceneAppenderInitializer.init(target, this.expiryTime, writerMap, scheduledExecutor);
 	}
 	
 	/**
-	* @MethodName: initIndexFieldNames
+	* @MethodName: initIndexFieldAndSetSystemProp
 	* @Description: the getIndexFieldNames
 	*/
-	private void initIndexFieldNames() {
+	private void initIndexFieldAndSetSystemProp() {
 		for (final LuceneIndexField luceneIndexField : indexFields) {
 			if (!DlcConstants.SYSTEM_NAME.equalsIgnoreCase(luceneIndexField.getName())) {
 				indexFieldNameList.add(luceneIndexField.getName());
 			}
 		}
+		System.setProperty("dlc.log.util", "log4j2");
 	}
 
 	/**
