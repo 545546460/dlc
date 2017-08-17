@@ -2,7 +2,7 @@ package com.example.demo;
 
 import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.ignite.service.DlcIgniteService;
-import com.happygo.dlc.ignite.DlcIgniteServicesExporter;
+import com.happygo.dlc.DlcIgniteServicesExporter;
 import com.happygo.dlc.ignite.service.DlcIgniteServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

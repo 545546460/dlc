@@ -13,24 +13,6 @@
  */
 package com.happygo.dlc.biz;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.ignite.Ignite;
-import org.apache.ignite.IgniteCache;
-import org.apache.ignite.cluster.ClusterGroup;
-import org.apache.ignite.cluster.ClusterGroupEmptyException;
-import org.apache.ignite.lang.IgniteCallable;
-import org.apache.ignite.resources.ServiceResource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.bean.PageParam;
@@ -38,6 +20,20 @@ import com.happgo.dlc.base.ignite.service.DlcQueryConditionService;
 import com.happgo.dlc.base.util.CollectionUtils;
 import com.happygo.dlc.biz.service.DlcLogQueryService;
 import com.happygo.dlc.dal.callback.DlcLogQueryCallback;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
+import org.apache.ignite.cluster.ClusterGroup;
+import org.apache.ignite.cluster.ClusterGroupEmptyException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 /**
  * ClassName:DlcLogQueryServiceImpl
  * @Description: DlcLogQueryServiceImpl.java
@@ -59,9 +55,9 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
     private Ignite ignite;
 
     /**
-     * IgniteCache<String,List<List<DlcLog>>> the igniteCache
+     * IgniteCache<String,Object> the igniteCache
      */
-    private IgniteCache<String, List<List<DlcLog>>> igniteCache;
+    private IgniteCache<String, Object> igniteCache;
 
     /**
      * Init ignite cache.
@@ -83,7 +79,7 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
     public List<List<DlcLog>> logQuery(String keyWord, String appName, PageParam pageParam) {
         //1.根据key在IgniteCache查询是否有缓存，如果有直接返回，否则继续第二步
         String igniteCacheKey = keyWord + "@" + appName;
-        List<List<DlcLog>> splitLogQueryDlcLogs = igniteCache.get(igniteCacheKey);
+        List<List<DlcLog>> splitLogQueryDlcLogs = (List<List<DlcLog>>) igniteCache.get(igniteCacheKey);
         if (splitLogQueryDlcLogs != null && !splitLogQueryDlcLogs.isEmpty()) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("get keyword[" + keyWord + "] dlc log from ignite cache");
@@ -114,9 +110,14 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 				return null;
 			}
 			List<DlcLog> logQueryDlcLogs = new ArrayList<DlcLog>();
+            List<DlcLog> dlcLogs = null;
 			for (Iterator<List<DlcLog>> it = logQueryResults.iterator(); it
 					.hasNext(); ) {
-				logQueryDlcLogs.addAll(it.next());
+                dlcLogs = it.next();
+                if (dlcLogs == null || dlcLogs.isEmpty()) {
+                    continue;
+                }
+				logQueryDlcLogs.addAll(dlcLogs);
 			}
 			return logQueryDlcLogs;
 		} catch (ClusterGroupEmptyException e) {
@@ -153,33 +154,29 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 	 * @see com.happygo.dlc.biz.service.DlcLogQueryService#getQueryConditions(java.lang.String)
 	 */
 	@Override
-	public List<String> getQueryConditions(String appName) {
+	public List<String> getQueryConditions(final String appName) {
+        String igniteCacheKey = appName;
 		try {
-			ClusterGroup clsGroup = ignite.cluster().forAttribute("ROLE", appName);
-			List<String> queryConditions = ignite.compute(clsGroup).call(
-					new IgniteCallable<List<String>>() {
-						/**
-						 * long the serialVersionUID
-						 */
-						private static final long serialVersionUID = 1L;
-
-						/**
-						 * DlcQueryConditionService the queryConditionService
-						 */
-						@ServiceResource(serviceName = DlcConstants.DLC_LOG_QUERY_CONDITION_SERVICE_NAME, proxyInterface = DlcQueryConditionService.class)
-						private DlcQueryConditionService queryConditionService;
-
-						/*
-						 * (non-Javadoc)
-						 * 
-						 * @see java.util.concurrent.Callable#call()
-						 */
-						@Override
-						public List<String> call() throws Exception {
-							return queryConditionService.getQueryConditions();
-						}
-					});
-			return queryConditions;
+            List<String> queryConditionList = (List<String>) igniteCache.get(igniteCacheKey);
+            if (queryConditionList != null && !queryConditionList.isEmpty()) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("get appName '" + appName + "' query conditions cache from ignite cache");
+                }
+                return queryConditionList;
+            }
+			final ClusterGroup clsGroup = ignite.cluster().forAttribute("ROLE", appName);
+            DlcQueryConditionService queryConditionService = ignite.services(clsGroup).
+                    serviceProxy(appName + "#" + DlcConstants.DLC_LOG_QUERY_CONDITION_SERVICE_NAME,
+                            DlcQueryConditionService.class, /*not-sticky*/false);
+            queryConditionList = queryConditionService.getQueryConditions();
+            boolean isSuccess = igniteCache.replace(igniteCacheKey, queryConditionList);
+            if (!isSuccess) {
+                igniteCache.put(igniteCacheKey, queryConditionList);
+            }
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("put appName '" + appName + "' query conditions cache in ignite cache");
+            }
+            return queryConditionList;
 		} catch (ClusterGroupEmptyException ex) {
 			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
 			return new ArrayList<>(0);
