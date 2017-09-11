@@ -13,6 +13,7 @@
  */
 package com.happygo.dlc.biz;
 
+import com.happgo.dlc.base.DLCException;
 import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.bean.PageParam;
@@ -20,8 +21,10 @@ import com.happgo.dlc.base.ignite.service.DlcQueryConditionService;
 import com.happgo.dlc.base.util.CollectionUtils;
 import com.happygo.dlc.biz.service.DlcLogQueryService;
 import com.happygo.dlc.dal.callback.DlcLogQueryCallback;
+
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.IgniteException;
 import org.apache.ignite.cluster.ClusterGroup;
 import org.apache.ignite.cluster.ClusterGroupEmptyException;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -122,7 +126,7 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
 			return logQueryDlcLogs;
 		} catch (ClusterGroupEmptyException e) {
 			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
-			return new ArrayList<>(0);
+			throw new DLCException("集群组【" + appName + "】未找到，请检查集群是否存在！");
 		}
     }
 
@@ -179,7 +183,10 @@ public class DlcLogQueryServiceImpl implements DlcLogQueryService {
             return queryConditionList;
 		} catch (ClusterGroupEmptyException ex) {
 			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
-			return new ArrayList<>(0);
+			throw new DLCException("集群组【" + appName + "】未找到，请检查集群是否存在！");
+		} catch(IgniteException ex) {
+			LOGGER.warn("Not find cluster nodes of appName:[" + appName + "]!");
+			throw new DLCException("集群组【" + appName + "】未找到，请检查集群是否存在！");
 		}
 	}
 }
