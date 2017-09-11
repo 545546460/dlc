@@ -13,6 +13,7 @@
  */
 package com.happygo.dlc.api.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.happgo.dlc.base.DLCException;
 import com.happgo.dlc.base.DlcConstants;
 import com.happgo.dlc.base.bean.DlcLog;
 import com.happgo.dlc.base.bean.PageParam;
@@ -75,21 +77,24 @@ public class DlcLogQueryController {
 		LogSource defaultLogSource = logSourceService.selectDefault(DlcConstants.DEFAULT);
 		ModelAndView modelAndView = new ModelAndView("search_results");
 		if (defaultLogSource == null) {
-			modelAndView.addObject("message", "fail");
-			DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
-					keyWord, 0, null, pageParam);
-			modelAndView.addObject("dlcLogResult", dlcLogResult);
+			modelAndView.addObject("message", "日志源未设置，请至主页 左侧菜单 >> 新增日志源！");
+			buildWarnModleAndView(modelAndView, keyWord, pageParam);
             return modelAndView;
 		}
-		String appName = defaultLogSource.getAppName();
-		List<List<DlcLog>> queryDlcLogs = dlcLogQueryService.logQuery(keyWord.trim(), appName, pageParam);
-		long endTime = System.currentTimeMillis();
-		long searchTime = endTime - startTime;
-		DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
-				keyWord, searchTime, queryDlcLogs, pageParam);
-		List<String> queryConditions = dlcLogQueryService.getQueryConditions(appName);
-		modelAndView.addObject("dlcLogResult", dlcLogResult);
-		modelAndView.addObject("queryConditions", queryConditions);
+		try {
+			String appName = defaultLogSource.getAppName();
+			List<List<DlcLog>> queryDlcLogs = dlcLogQueryService.logQuery(keyWord.trim(), appName, pageParam);
+			long endTime = System.currentTimeMillis();
+			long searchTime = endTime - startTime;
+			DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
+					keyWord, searchTime, queryDlcLogs, pageParam);
+			List<String> queryConditions = dlcLogQueryService.getQueryConditions(appName);
+			modelAndView.addObject("dlcLogResult", dlcLogResult);
+			modelAndView.addObject("queryConditions", queryConditions);
+		} catch(DLCException ex) {
+	        buildWarnModleAndView(modelAndView, keyWord, pageParam);
+			modelAndView.addObject("message", ex.getMessage());
+		}
 		LOGGER.info("^------- DLC 日志查询结束  -------^");
 		return modelAndView;
 	}
@@ -105,5 +110,19 @@ public class DlcLogQueryController {
 		ModelAndView modelAndView = new ModelAndView("search_results_detail");
 		modelAndView.addObject("logDetail", logDetail);
 		return modelAndView;
+	}
+	
+	/**
+	* @MethodName: buildWarnModleAndView
+	* @Description: the buildWarnModleAndView
+	* @param modelAndView
+	* @param keyWord
+	* @param pageParam
+	*/
+	private void buildWarnModleAndView(ModelAndView modelAndView, String keyWord, PageParam pageParam) {
+		DlcLogResult dlcLogResult = DlcLogResultHelper.buildDlcLogResult(
+				keyWord, 0, null, pageParam);
+		modelAndView.addObject("dlcLogResult", dlcLogResult);
+		modelAndView.addObject("queryConditions", new ArrayList<>(0));
 	}
 }
