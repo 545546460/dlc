@@ -74,11 +74,11 @@
                                     记录时间：${dlcLogBaseResult.logRecordTime!}</a>
 
                                 <h3>
-                                    <#if dlcLogBaseResult.content?length gt 256>
+                                    <#if dlcLogBaseResult.content?length gt 1024>
                                         <form id="detail_form" action="/dlc/log/detail" method="post">
                                             <input type="text" name="logDetail" value="${dlcLogBaseResult.content}" hidden>
                                             <a href="javascript:document:detail_form.submit();">
-                                                ${dlcLogBaseResult.content?substring(0, 256)}...
+                                                ${dlcLogBaseResult.content?substring(0, 1024)}...
                                             </a>
                                         </form>
                                     <#else>${dlcLogBaseResult.content!}
@@ -122,10 +122,10 @@
 <script src="/js/plugins/sweetalert/sweetalert.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		if ($("input[id='message']").val() == "fail") {
+		if ($("input[id='message']").val() !== '') {
 			swal({
 				title : "Warning",
-				text : "日志源未设置，请至主页 左侧菜单 >> 新增日志源！"
+				text : $("input[id='message']").val()
 			})
 		}
 	});
