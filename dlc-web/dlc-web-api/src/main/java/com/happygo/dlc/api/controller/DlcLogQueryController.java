@@ -100,19 +100,6 @@ public class DlcLogQueryController {
 	}
 	
 	/**
-	* @MethodName: logDetail
-	* @Description: the logDetail
-	* @param logDetail
-	* @return ModelAndView
-	*/
-	@PostMapping(value = "/log/detail")
-	public ModelAndView logDetail(@RequestParam("logDetail")String logDetail) {
-		ModelAndView modelAndView = new ModelAndView("search_results_detail");
-		modelAndView.addObject("logDetail", logDetail);
-		return modelAndView;
-	}
-	
-	/**
 	* @MethodName: buildWarnModleAndView
 	* @Description: the buildWarnModleAndView
 	* @param modelAndView
