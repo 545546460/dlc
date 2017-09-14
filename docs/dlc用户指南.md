@@ -1,5 +1,4 @@
 # Distributed Log Collected用户指南
-
 ***
 ## 目录
 > ### 1. dlc入门
@@ -8,11 +7,15 @@
 > ### 2. dlc-core配置
 * 2.1. 引入dlc-core构件
 * 2.2. 配置dlc-ignite文件
-* 2.3. 发布dlc服务
+* 2.3. 日志组件文件引入Lucene Appender
+* 2.4. 发布dlc服务
 > ### 3.dlc-web部署
 * 3.1. dlc-web配置
 * 3.2. dlc-web一键式部署
-
+> ### 4. dlc查询语法
+> ### 5. 日志源设置
+* 5.1. 新增日志源
+* 5.2. 日志源列表
 ***
 ## 1. dlc入门
 ### 1.1. dlc结构介绍
@@ -28,11 +31,17 @@ dlc-core与应用集成，需在应用系统的pom文件中引入dlc-core构件�
 <dependency>
 	<groupId>com.happygo.dlc</groupId>
 	<artifactId>dlc-core</artifactId>
-	<version>1.1.1</version>
+	<version>最新版本</version>
 </dependency>
 ```
 ### 2.2. 配置dlc-ignite文件
-在应用系统中src/main/resources下建立一个目录，命名为config，在config下新建一个dlc-default.xml以及dlc-ignite.xml文件，下面两个xml文件的配置，拿来即用，只需将<value>127.0.0.1:47500..47509</value>替换成真实IP，模板如下：
+在应用系统中src/main/resources下建立一个目录，命名为config，在config下新建一个dlc-default.xml以及dlc-ignite.xml文件，下面两个xml文件的配置，拿来即用，需将```<value>127.0.0.1:47500..47509</value>```替换成真实IP以及如下中的value替换成对应应用名称，key无需替换
+```
+<map>
+    <entry key="ROLE" value="dlc-example"/>
+</map>
+```
+模板如下：
 dlc-default.xml
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -160,10 +169,14 @@ dlc-ignite.xml:
     <bean parent="ignite.cfg"/>
 </beans>
 ```
+### 2.3. 日志组件文件引入Lucene Appender
+> _[日志文件配置内容](https://github.com/xiapshen/dlc/wiki/log-config-file)_
 
-### 2.3. 发布dlc服务（Spring）
+> ps:_目前只支持log4j系列的日志记录_
+
+### 2.4. 发布dlc服务（Spring）
 dlc服务的发布分为两种，clusterSingleton和nodeSingleton，clusterSingleton（集群单例）指部署一个集群范围的单例服务，Ignite会保证集群内会一直有一个该服务的实例。当部署该服务的节点故障或者停止时，Ignite会自动在另一个节点上重新部署该服务；nodeSingleton（节点单例）指部署一个节点范围的单例服务，Ignite会保证每个节点都会有一个服务的实例在运行。当在集群组中启动了新的节点时，Ignite会自动地在每个新节点上部署一个新的服务实例。
-#### 2.3.1. 在Spring的application.xml中配置
+#### 2.4.1. 在Spring的application.xml中配置
 ```
 <bean id="dlcServiceExporter" class="com.happygo.dlc.ignite.DlcIgniteServicesExporter" init-method="export">
     <property name="mode" value="nodeSingleton" />
@@ -172,7 +185,7 @@ dlc服务的发布分为两种，clusterSingleton和nodeSingleton，clusterSingl
     </property>
 </bean>
 ```
-#### 2.3.2. Spring java配置
+#### 2.4.2. Spring java配置
 ```
 @Bean
 public DlcIgniteServicesExporter expoter() {
@@ -188,7 +201,7 @@ public DlcIgniteServicesExporter expoter() {
 #### 3.1.1. 下载dlc-web-xxx.zip
 下载dlc源码，通过maven打包，会在target下生成dlc-web-xxx.zip
 #### 3.1.2. 配置
-将zip文件解压到指定部署机器，将config/dlc-default.xml中<value>127.0.0.1:47500..47509</value>替换成真实部署机器IP地址，如果需要有需要可修改如下粗体内容配置
+将zip文件解压到指定部署机器，将config/dlc-default.xml中<value>127.0.0.1:47500..47509</value>替换成真实部署机器IP地址，如下配置中加了注释“**用户可按需设置**”均可修改
 ```
 <!-- Config ignite client cache -->
 <property name="cacheConfiguration">
@@ -200,8 +213,8 @@ public DlcIgniteServicesExporter expoter() {
             <property name="backups" value="1"/>
             <property name="evictionPolicy">
                 <bean class="org.apache.ignite.cache.eviction.lru.LruEvictionPolicy">
-                    <!-- 设置缓存中需要储存的元素个数-->
-                    **<constructor-arg value="1000"/>**
+                    <!-- 设置缓存中需要储存的元素个数，用户可按需设置 -->
+                    <constructor-arg value="1000"/>
                 </bean>
             </property>
             <property name="expiryPolicyFactory">
@@ -217,8 +230,8 @@ public DlcIgniteServicesExporter expoter() {
                                                       value="java.util.concurrent.TimeUnit.MINUTES"/>
                                         </bean>
                                     </constructor-arg>
-                                    <!-- 设置缓存失效时间， 单位：分钟 -->
-                                    **<constructor-arg index="1" value="2"/>**
+                                    <!-- 设置缓存失效时间， 单位：分钟，用户可按需设置 -->
+                                    <constructor-arg index="1" value="2"/>
                                 </bean>
                             </constructor-arg>
                         </bean>
@@ -250,3 +263,15 @@ public DlcIgniteServicesExporter expoter() {
 2017-08-06 16:11:36.311  INFO 7844 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'statViewServlet' to [/druid/*]
 2017-08-06 16:11:36.328  INFO 7844 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
 ```
+
+## 4. dlc查询语法
+> _[查询语法](https://github.com/xiapshen/dlc/wiki/dlc-query-grammar)_
+
+## 5. 日志源设置
+### 5.1. 新增日志源
+初次使用dlc-web客户端需新增默认日志源，否则系统会报未设置日志源
+![新增日志源](https://github.com/xiapshen/dlc/blob/master/docs/images/add_logsource.png)
+
+### 5.2. 日志源列表
+日志源列表可以修改默认日志源以及删除无用日志源
+![日志源列表](https://github.com/xiapshen/dlc/blob/master/docs/images/logsource_list.png)
