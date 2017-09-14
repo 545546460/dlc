@@ -103,6 +103,7 @@
 						</button>
 						<#assign parent = dlcLogResult.pageBean.currentPage/> <#list
 						1..dlcLogResult.pageBean.totalPage as currentPage>
+						<#setting number_format="#">
 						<button
 							class="btn btn-white <#if (currentPage==parent)>active</#if>"
 							onclick="javascript:getwith('/dlc/log/query',{'keyWord':'${dlcLogResult.keyWord}', 'pageNum':'${currentPage}', 'numPerPage':'50'})">
