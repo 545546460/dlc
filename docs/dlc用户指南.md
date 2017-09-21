@@ -197,6 +197,7 @@ public DlcIgniteServicesExporter expoter() {
 	return expoter;
 }
 ```
+## 3.dlc-web部署
 ### 3.1. dlc-web配置
 #### 3.1.1. 下载dlc-web-xxx.zip
 下载dlc源码，通过maven打包，会在target下生成dlc-web-xxx.zip
