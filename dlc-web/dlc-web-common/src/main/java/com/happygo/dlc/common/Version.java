@@ -24,7 +24,7 @@ public class Version {
 	/**
 	 * String the VERSION 
 	 */
-	public static final String VERSION = "1.2.0.RELEASE";
+	public static final String VERSION = Version.class.getPackage().getImplementationVersion();
 	
 	/**
 	 * Constructor com.happygo.dlc.common.Version
